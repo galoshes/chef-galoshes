@@ -1,0 +1,4 @@
+- pull in more stuff to mimic the layout of https://github.com/opscode-cookbooks/chef-splunk
+- setup travis account
+- add to supermarket via https://docs.getchef.com/knife_cookbook_site.html#share and https://supermarket.getchef.com
+- make a PR for that extra attribute I monkey patched to fog
