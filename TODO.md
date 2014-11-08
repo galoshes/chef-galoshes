@@ -6,3 +6,7 @@
 - dns record
 - basic vpc
 - autoscaling group
+
+- add additional fields to attributes to delineate if they are used in the create and/or the update actions
+- Add a consistent hash feature for the aws name of a launch configuration
+- Add option to have autoscaling groups append instance resources into run_context
