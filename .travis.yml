@@ -1,4 +1,11 @@
 language: ruby
+script: "bundle exec rake"
 rvm:
   - 1.9.3
   - 2.0.0
+  - 2.1.0
+notifications:
+  email:
+    - ben_pillet@yahoo.com
+  on_success: change
+  on_failure: always

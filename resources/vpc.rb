@@ -13,4 +13,4 @@ attribute :dhcp_options_id, :kind_of => [String, NilClass], :default => nil
 attribute :tags, :kind_of => [Hash], :default => {}
 attribute :enable_dns_support, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :enable_dns_hostnames, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :tenancy, :equal_to => ['default', 'dedicated'], :default => 'default'
+attribute :tenancy, :equal_to => %w(default dedicated), :default => 'default'
