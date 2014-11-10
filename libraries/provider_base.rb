@@ -49,7 +49,7 @@ class Chef
         new_value = new_resource.send(attribute_sym)
         Chef::Log.debug("new_value: #{new_value}")
 
-        converge_if(current_value != new_value, "Updating '#{new_resource.resource_name}[#{new_resource.name}].#{attribute_sym}' from #{current_value} to #{new_value}" do
+        converge_if(current_value != new_value, "Updating '#{new_resource.resource_name}[#{new_resource.name}].#{attribute_sym}' from #{current_value} to #{new_value}") do
           result = fix_the_attribute.call
           verify_result(result, "'#{new_resource.resource_name}[#{new_resource.name}].#{attribute_sym}' (#{fix_the_attribute})")
         end
@@ -59,7 +59,6 @@ class Chef
     require_relative 'provider_dhcp_options'
     require_relative 'provider_vpc'
     require_relative 'provider_subnet'
-    require_relative 'provider_load_balancer'
 
   end
 end

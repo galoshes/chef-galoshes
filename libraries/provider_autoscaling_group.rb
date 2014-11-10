@@ -3,7 +3,7 @@ require_relative 'provider_base'
 
 class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
 
-  def load_current_resource
+  def load_current_resource()
     require 'fog'
     require 'fog/aws/models/auto_scaling/groups'
 

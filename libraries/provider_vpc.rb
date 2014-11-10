@@ -27,7 +27,7 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
       @current_resource.tenancy(vpcs[0].tenancy)
       @current_resource.tags(vpcs[0].tags)
 
-      load_attributes()
+      load_attributes
     end
 
     if new_resource.dhcp_options_id.nil?
@@ -54,46 +54,44 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
 
     if @current_resource.id.nil?
       converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
-        result = con.create_vpc(new_resource.cidr_block, {'InstanceTenancy' => new_resource.tenancy})
+        result = con.create_vpc(new_resource.cidr_block, 'InstanceTenancy' => new_resource.tenancy)
         if verify_result(result, "create_vpc(#{new_resource.cidr_block}) #{new_resource.name}")
-          bodySet = result.body['vpcSet']
-          if bodySet.size != 1
+          body_set = result.body['vpcSet']
+          if body_set.size != 1
             Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
           else
-            @current_resource.id(bodySet[0]['vpcId'])
-            @current_resource.cidr_block(bodySet[0]['cidrBlock'])
-            @current_resource.dhcp_options_id(bodySet[0]['dhcpOptionsId'])
-            @current_resource.tenancy(bodySet[0]['instanceTenancy'])
-            @current_resource.tags(bodySet[0]['tagSet'])
-            load_attributes()
+            @current_resource.id(body_set[0]['vpcId'])
+            @current_resource.cidr_block(body_set[0]['cidrBlock'])
+            @current_resource.dhcp_options_id(body_set[0]['dhcpOptionsId'])
+            @current_resource.tenancy(body_set[0]['instanceTenancy'])
+            @current_resource.tags(body_set[0]['tagSet'])
+            load_attributes
           end
           Chef::Log.info("id: #{@current_resource.id}")
         end
       end
     else
-      Chef::Log.info("current_resource exists")
+      Chef::Log.info('current_resource exists')
     end
 
-    verify_attribute(:tags) {
+    verify_attribute(:tags) do
       con.create_tags(@current_resource.id, new_resource.tags)
-    }
+    end
 
-    verify_attribute(:dhcp_options_id) {
+    verify_attribute(:dhcp_options_id) do
       con.associate_dhcp_options(new_resource.dhcp_options_id, @current_resource.id)
-    }
+    end
 
-    verify_attribute(:enable_dns_support) {
-      con.modify_vpc_attribute(@current_resource.id, {'EnableDnsSupport.Value' => new_resource.enable_dns_support})
-    }
+    verify_attribute(:enable_dns_support) do
+      con.modify_vpc_attribute(@current_resource.id, 'EnableDnsSupport.Value' => new_resource.enable_dns_support)
+    end
 
-    verify_attribute(:enable_dns_hostnames) {
-      con.modify_vpc_attribute(@current_resource.id, {'EnableDnsHostnames.Value' => new_resource.enable_dns_hostnames})
-    }
+    verify_attribute(:enable_dns_hostnames) do
+      con.modify_vpc_attribute(@current_resource.id, 'EnableDnsHostnames.Value' => new_resource.enable_dns_hostnames)
+    end
 
-    verify_attribute(:tenancy) {
+    verify_attribute(:tenancy) do
       OpenStruct.new(:status => "Cannot update the tenancy on VPCs to #{new_resource.tenancy}")
-    }
-
+    end
   end
-
 end

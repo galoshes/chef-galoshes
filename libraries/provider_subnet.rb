@@ -1,11 +1,10 @@
 
 class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
-
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesSubnet.new(new_resource.name)
 
     if new_resource.vpc_id.nil?
-      Chef::Log.debug("loading vpc_id from vpc")
+      Chef::Log.debug('loading vpc_id from vpc')
       vpcs = Fog::Compute[:aws].vpcs.all('tag:Name' => new_resource.vpc)
       Chef::Log.debug("vpcs: #{vpcs.inspect}")
       if vpcs.size != 1
@@ -53,13 +52,11 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
         end
       end
     else
-      Chef::Log.info("current_resource exists")
+      Chef::Log.info('current_resource exists')
     end
 
-    verify_attribute(:tags) {
+    verify_attribute(:tags) do
       con.create_tags(@current_resource.id, new_resource.tags)
-    }
-
+    end
   end
-
 end
