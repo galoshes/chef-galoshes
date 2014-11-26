@@ -20,3 +20,4 @@ attribute :placement_tenancy, :kind_of => String
 
 attribute :aws_access_key_id, :default => nil
 attribute :aws_secret_access_key, :default => nil
+attribute :region, :default => 'us-east-1'

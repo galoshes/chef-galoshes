@@ -18,6 +18,7 @@ attribute :health_check_grace_period
 attribute :health_check_type
 attribute :instances
 attribute :launch_configuration_name
+attribute :launch_configuration
 attribute :load_balancer_names
 attribute :max_size
 attribute :min_size
@@ -29,3 +30,4 @@ attribute :vpc_zone_identifier
 
 attribute :aws_access_key_id, :default => nil
 attribute :aws_secret_access_key, :default => nil
+attribute :region, :default => 'us-east-1'
