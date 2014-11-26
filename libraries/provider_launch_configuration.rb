@@ -2,7 +2,6 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
-
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/auto_scaling/configurations'
@@ -13,7 +12,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
 
     @fog_as = Fog::AWS::AutoScaling.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::AWS::AutoScaling::Configurations.new(:service => @fog_as)
-    @current_resource = @collection.new({ :id => new_resource.name, :service => @fog_as })
+    @current_resource = @collection.new(:id => new_resource.name, :service => @fog_as)
     @current_resource.class.attribute(:placement_tenancy, :aliases => 'PlacementTenancy')  # This is missing from fog at the moment
 
     @current_resource.reload
@@ -25,7 +24,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    converge_if( !(@exists), "create #{resource_str}") do
+    converge_if(!(@exists), "create #{resource_str}") do
       create_attributes = [:id, :image_id, :instance_type, :security_groups, :block_device_mappings, :key_name, :user_data, :kernel_id, :ramdisk_id, :placement_tenancy]
       create_attributes.each do |attr|
         value = new_resource.send(attr)
@@ -43,10 +42,9 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
 
   def action_delete
     converge_if(@exists, "delete #{resource_str}") do
-      @current_resource.destroy()
+      @current_resource.destroy
       @exists = false
       new_resource.updated_by_last_action(true)
     end
   end
-
 end

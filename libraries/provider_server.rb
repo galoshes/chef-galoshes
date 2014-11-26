@@ -2,7 +2,6 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
-
   def load_current_resource
     require 'fog'
 
@@ -21,33 +20,31 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
   end
 
   def action_create
-
   end
 
   def action_delete
-
   end
 
   def action_update
     if @exists
       Chef::Log.info("tags cur: #{@current_resource.tags}")
       Chef::Log.info("tags new: #{new_resource.tags}")
-      new_tags = new_resource.tags.reject { |k,_| @current_resource.tags.include? k }
+      new_tags = new_resource.tags.reject { |k, _| @current_resource.tags.include? k }
       Chef::Log.info("new_tags: #{new_tags}")
       converge_if(new_tags.size > 0, "add tags: #{new_tags}") {}
 
-      update_tags = new_resource.tags.select { |k,v| @current_resource.tags.include?(k) && @current_resource.tags[k] != v }
+      update_tags = new_resource.tags.select { |k, v| @current_resource.tags.include?(k) && @current_resource.tags[k] != v }
       update_tags.each do |tag, value|
         converge_by("update tag #{tag} from #{@current_resource.tags[tag]} to #{value}") {}
       end
       changes = new_tags.merge(update_tags)
-      converge_if(changes.size > 0, "call create_tags") do
+      converge_if(changes.size > 0, 'call create_tags') do
         result = @current_resource.service.create_tags([@current_resource.id], new_tags.merge(update_tags))
         Chef::Log.info("result: #{result.inspect}")
         new_resource.updated_by_last_action(true)
       end
 
-      delete_tags = @current_resource.tags.reject { |k,_| new_resource.tags.include? k }
+      delete_tags = @current_resource.tags.reject { |k, _| new_resource.tags.include? k }
       Chef::Log.info("delete_tags: #{delete_tags}")
       converge_if(delete_tags.size != 0, "removing tags: #{delete_tags}") do
         result = @current_resource.service.delete_tags([@current_resource.id], delete_tags)

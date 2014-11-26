@@ -1,6 +1,5 @@
 
 class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
-
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesDhcpOptions.new(new_resource.name)
 
@@ -26,7 +25,7 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
     if @current_resource.id.nil?
       converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
         result = con.create_dhcp_options(new_resource.configuration_set)
-        if verify_result(result, "create_dhcp_options")
+        if verify_result(result, 'create_dhcp_options')
           bodySet = result.body['dhcpOptionsSet']
           if bodySet.size != 1
             Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
@@ -39,13 +38,11 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
         end
       end
     else
-      Chef::Log.info("current_resource exists")
+      Chef::Log.info('current_resource exists')
     end
 
-    verify_attribute(:tags) {
+    verify_attribute(:tags) do
       con.create_tags(@current_resource.id, new_resource.tags)
-    }
-
+    end
   end
-
 end

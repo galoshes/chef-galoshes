@@ -1,9 +1,7 @@
 
 class Chef
   class Provider
-
     class GaloshesBase < Chef::Provider
-
       def con
         require 'fog'
         @con ||= Fog::Compute[:aws]
@@ -15,7 +13,7 @@ class Chef
       end
 
       def action_create
-        Chef::Log.info("action_create")
+        Chef::Log.info('action_create')
       end
 
       def resource_str
@@ -24,8 +22,8 @@ class Chef
 
       def converge_if(condition, message, &block)
         if condition
-	  converge_by(message, &block)
-	end
+          converge_by(message, &block)
+  end
       end
 
       def verify_result(result, msg)
@@ -34,7 +32,7 @@ class Chef
           Chef::Log.error(msg + " fail status: #{result.status}")
           return false
         else
-          Chef::Log.info(msg + " success")
+          Chef::Log.info(msg + ' success')
           new_resource.updated_by_last_action(true)
           return true
         end
@@ -59,6 +57,5 @@ class Chef
     require_relative 'provider_dhcp_options'
     require_relative 'provider_vpc'
     require_relative 'provider_subnet'
-
   end
 end

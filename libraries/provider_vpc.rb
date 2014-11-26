@@ -1,6 +1,5 @@
 
 class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
-
   def load_attributes
     result = con.describe_vpc_attribute(@current_resource.id, 'enableDnsSupport')
     if result.status == 200
@@ -31,7 +30,7 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
     end
 
     if new_resource.dhcp_options_id.nil?
-      Chef::Log.debug("loading dhcp_options_id from dhcp_options attribute")
+      Chef::Log.debug('loading dhcp_options_id from dhcp_options attribute')
 
       dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.dhcp_options)
       Chef::Log.debug("dhcp_options: #{dhcp_options.inspect}")

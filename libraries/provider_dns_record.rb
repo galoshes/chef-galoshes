@@ -2,7 +2,6 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
-
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/dns/records'
@@ -28,7 +27,7 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    converge_if( !(@exists), "create #{new_resource.resource_name} for #{@fqdn}") do
+    converge_if(!(@exists), "create #{new_resource.resource_name} for #{@fqdn}") do
       attributes = [:value, :ttl, :type, :alias_target, :region]
       attributes.each do |attr|
         value = new_resource.send(attr)
@@ -46,7 +45,7 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
 
   def action_delete
     converge_if(@exists, "delete #{resource_str}") do
-      @current_resource.destroy()
+      @current_resource.destroy
       @exists = false
       new_resource.updated_by_last_action(true)
     end
@@ -59,9 +58,9 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
 
       attributes.each do |attr|
         current_value = @current_resource.send(attr)
-	new_value = new_resource.send(attr)
-	Chef::Log.debug("checking #{attr} cur: #{current_value.inspect} new: #{new_value.inspect} equal? #{current_value.to_s == new_value.to_s}")
-        converge_if(current_value.to_s != new_value.to_s, "updating #{resource_str}.#{attr} from #{current_value.to_s} to #{new_value.to_s}") do
+        new_value = new_resource.send(attr)
+        Chef::Log.debug("checking #{attr} cur: #{current_value.inspect} new: #{new_value.inspect} equal? #{current_value.to_s == new_value.to_s}")
+        converge_if(current_value.to_s != new_value.to_s, "updating #{resource_str}.#{attr} from #{current_value} to #{new_value}") do
           @current_resource.modify(attr => new_value)
           @current_resource.send("#{attr}=", new_value)
         end
@@ -69,5 +68,4 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
 
     end
   end
-
 end
