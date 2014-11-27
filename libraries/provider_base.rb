@@ -23,39 +23,29 @@ class Chef
       def converge_if(condition, message, &block)
         if condition
           converge_by(message, &block)
-  end
+        end
       end
 
       def verify_result(result, msg)
-        Chef::Log.debug("result: #{result.status}")
-        if result.status != 200
-          Chef::Log.error(msg + " fail status: #{result.status}")
-          return false
-        else
-          Chef::Log.info(msg + ' success')
-          new_resource.updated_by_last_action(true)
-          return true
+        unless result.nil?
+          Chef::Log.debug("result: #{result.status} msg: #{msg}")
+          new_resource.updated_by_last_action(true) if result.status == 200
+          (result.status == 200)
         end
       end
 
       def verify_attribute(attribute_sym, &fix_the_attribute)
-        Chef::Log.info("verify #{new_resource.resource_name}[#{new_resource.name}].#{attribute_sym}")
+        Chef::Log.info("verify #{resource_str}.#{attribute_sym}")
 
         current_value = @current_resource.send(attribute_sym)
-        Chef::Log.debug("current_value: #{current_value}")
-
         new_value = new_resource.send(attribute_sym)
-        Chef::Log.debug("new_value: #{new_value}")
+        Chef::Log.info("#{resource_str}.#{attribute_sym} cur: #{current_value.inspect} new: #{new_value.inspect}")
 
-        converge_if(current_value != new_value, "Updating '#{new_resource.resource_name}[#{new_resource.name}].#{attribute_sym}' from #{current_value} to #{new_value}") do
+        converge_if(current_value != new_value, "update '#{resource_str}.#{attribute_sym}' from '#{current_value}' to '#{new_value}'") do
           result = fix_the_attribute.call
-          verify_result(result, "'#{new_resource.resource_name}[#{new_resource.name}].#{attribute_sym}' (#{fix_the_attribute})")
+          verify_result(result, "'#{resource_str}.#{attribute_sym}' (#{fix_the_attribute})")
         end
       end
     end
-
-    require_relative 'provider_dhcp_options'
-    require_relative 'provider_vpc'
-    require_relative 'provider_subnet'
   end
 end

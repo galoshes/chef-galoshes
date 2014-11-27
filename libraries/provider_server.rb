@@ -14,7 +14,7 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
 
     @exists = !(@current_resource.nil?)
     Chef::Log.info("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
-    Chef::Log.info(@current_resource.inspect)
+    Chef::Log.debug(@current_resource.inspect)
 
     @current_resource
   end
@@ -48,7 +48,7 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
       Chef::Log.info("delete_tags: #{delete_tags}")
       converge_if(delete_tags.size != 0, "removing tags: #{delete_tags}") do
         result = @current_resource.service.delete_tags([@current_resource.id], delete_tags)
-        new_resource.updated_by_last_action(true)
+        verify_result(result)
       end
 
       cur_groups = @current_resource.security_group_ids

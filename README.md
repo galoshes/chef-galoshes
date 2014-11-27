@@ -1,9 +1,14 @@
 chef-galoshes
 =============
 
-This cookbook manages AWS services.
+This cookbook manages AWS services including: Autoscaling Groups, DNS Zones and Records, Elastic Load Balancers, Security Groups, VPC's and Subnets.
 
-## Requirements
+[![Build Status](https://secure.travis-ci.org/galoshes/chef-galoshes.png?branch=master)](http://travis-ci.org/galoshes/chef-galoshes)
+[![Code Climate](https://codeclimate.com/github/galoshes/chef-galoshes.png)](https://codeclimate.com/github/galoshes/chef-galoshes)
+
+## Getting Started
+
+See this page for an introduction to using galoshes.
 
 ## Attributes
 
@@ -17,6 +22,16 @@ General attributes:
   specified for the individual resources.
 * `node['galoshes']['aws_secret_access_key']`: AWS credentials to use if they are not
   specified for the individual resources.
+* `node['galoshes']['region']`: AWS region to use if not specified for the
+  individual resources.
+
+## Resources
+
+### Autoscaling Groups
+
+### DNS
+
+### VPC
 
 ## Recipes
 

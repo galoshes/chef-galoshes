@@ -2,6 +2,10 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
+  def clarify_attributes
+    @current_resource.placement_tenancy ||= 'default'
+  end
+
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/auto_scaling/configurations'
@@ -16,6 +20,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
     @current_resource.class.attribute(:placement_tenancy, :aliases => 'PlacementTenancy')  # This is missing from fog at the moment
 
     @current_resource.reload
+    clarify_attributes
     @exists = !(@current_resource.created_at.nil?)
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
     Chef::Log.debug(@current_resource.inspect)
@@ -34,9 +39,8 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
       Chef::Log.debug("current_resource before save: #{current_resource}")
 
       result = @current_resource.save
-      Chef::Log.debug("create launch configuration result: #{result}")
-      @exists = true
-      new_resource.updated_by_last_action(true)
+      @exists = !(result.nil?)
+      clarify_attributes
     end
   end
 
@@ -46,5 +50,20 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
       @exists = false
       new_resource.updated_by_last_action(true)
     end
+  end
+
+  def action_update
+    update_attributes = [:id, :image_id, :instance_type, :block_device_mappings, :key_name, :kernel_id, :ramdisk_id, :placement_tenancy]
+    update_attributes.each do |attr|
+      verify_attribute(attr) {}
+    end
+
+    Chef::Log.info("verify #{resource_str}.security_groups")
+    current_value = @current_resource.security_groups.sort unless @current_resource.security_groups.nil?
+    new_value = new_resource.security_groups.sort unless @new_resource.security_groups.nil?
+    Chef::Log.info("#{resource_str}.security_groups cur: #{current_value.inspect} new: #{new_value.inspect}")
+    converge_if(current_value != new_value, "update '#{resource_str}.security_groups from '#{current_value}' to '#{new_value}'") {}
+
+    # FIX ME - :user_data needs to be added, but is broken in fog
   end
 end

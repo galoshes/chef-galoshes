@@ -49,18 +49,6 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
       end
     end
 
-    def verify_result(status, msg)
-      Chef::Log.debug("result: #{status}")
-      if status != 200
-        Chef::Log.error(msg + ' fail')
-        return false
-      else
-        Chef::Log.info(msg + ' success')
-        new_resource.updated_by_last_action(true)
-        return true
-      end
-    end
-
     # verify subparts
     if cur_elb.nil? || new_resource.security_groups != cur_elb.security_groups
       Chef::Log.info('new.sg != cur.sg')

@@ -51,28 +51,28 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
   def action_create
     Chef::Log.debug("new_resource: #{new_resource.inspect}")
 
-    if @current_resource.id.nil?
-      converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
-        result = con.create_vpc(new_resource.cidr_block, 'InstanceTenancy' => new_resource.tenancy)
-        if verify_result(result, "create_vpc(#{new_resource.cidr_block}) #{new_resource.name}")
-          body_set = result.body['vpcSet']
-          if body_set.size != 1
-            Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
-          else
-            @current_resource.id(body_set[0]['vpcId'])
-            @current_resource.cidr_block(body_set[0]['cidrBlock'])
-            @current_resource.dhcp_options_id(body_set[0]['dhcpOptionsId'])
-            @current_resource.tenancy(body_set[0]['instanceTenancy'])
-            @current_resource.tags(body_set[0]['tagSet'])
-            load_attributes
-          end
-          Chef::Log.info("id: #{@current_resource.id}")
+    converge_if(@current_resource.id.nil?, "Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
+      result = con.create_vpc(new_resource.cidr_block, 'InstanceTenancy' => new_resource.tenancy)
+      if verify_result(result, "create_vpc(#{new_resource.cidr_block}) #{new_resource.name}")
+        body_set = result.body['vpcSet']
+        if body_set.size != 1
+          Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
+        else
+          @current_resource.id(body_set[0]['vpcId'])
+          @current_resource.cidr_block(body_set[0]['cidrBlock'])
+          @current_resource.dhcp_options_id(body_set[0]['dhcpOptionsId'])
+          @current_resource.tenancy(body_set[0]['instanceTenancy'])
+          @current_resource.tags(body_set[0]['tagSet'])
+          load_attributes
         end
+        Chef::Log.info("id: #{@current_resource.id}")
       end
-    else
-      Chef::Log.info('current_resource exists')
     end
 
+    action_update
+  end
+
+  def action_update
     verify_attribute(:tags) do
       con.create_tags(@current_resource.id, new_resource.tags)
     end

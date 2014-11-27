@@ -22,6 +22,7 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     if @exists
       new_resource.instances(@current_resource.instances)
     end
+    new_resource.launch_configuration_name = new_resource.launch_configuration.name
     @current_resource
   end
 
@@ -56,20 +57,14 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
 
   def action_update
     if @exists
-      filtered_options = @current_resource.class.attributes - [:tags, :instances]
+      filtered_options = @current_resource.class.attributes + [:launch_configuration_name] - [:tags, :instances, :created_at, :arn]
       Chef::Log.debug("filtered_options: #{filtered_options}")
       converged = true
       filtered_options.each do |attr|
-        current_value = @current_resource.send(attr)
-        new_value = new_resource.send(attr)
-        Chef::Log.debug("attr: #{attr} current: #{current_value} new: #{new_value}")
-        if !(new_value.nil?) && (current_value.to_s != new_value.to_s)
+        verify_attribute(attr) do
+          @current_resource.send("#{attr}=", new_value)
           converged = false
-          converge_by("update #{resource_str}.#{attr} from #{current_value} to #{new_value}") do
-            @current_resource.send("#{attr}=", new_value)
-          end
         end
-        Chef::Log.debug("checking #{attr} cur: #{current_value.inspect} new: #{new_value.inspect} converged: #{converged}")
       end
 
       converge_if(!converged, "updating #{resource_str}") do
@@ -85,14 +80,17 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
         new_resource.updated_by_last_action(true)
       end
 
+      new_resource.servers = []
       new_resource.instances.each do |instance|
         instance_tags = new_resource.tags.merge('aws:autoscaling:groupName' => new_resource.name, 'Name' => "#{new_resource.name}-#{instance.id}")
-        server = Chef::Resource::GaloshesServer.new("#{new_resource.name}-#{instance.id}", run_context)
+        server = Chef::Resource::GaloshesServer.new(instance.id, run_context)
         Chef::Log.debug("server: #{server.inspect}")
+        server.filter_by('instance-id')
         server.region(new_resource.region)
         server.tags(instance_tags)
         server.security_group_ids(new_resource.launch_configuration.security_groups)
         server.run_action(:update)
+        new_resource.servers << server
       end
 
     end

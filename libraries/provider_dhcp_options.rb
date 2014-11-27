@@ -26,13 +26,13 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
       converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
         result = con.create_dhcp_options(new_resource.configuration_set)
         if verify_result(result, 'create_dhcp_options')
-          bodySet = result.body['dhcpOptionsSet']
-          if bodySet.size != 1
+          body_set = result.body['dhcpOptionsSet']
+          if body_set.size != 1
             Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
           else
-            @current_resource.id(bodySet[0]['dhcpOptionsId'])
-            @current_resource.configuration_set(bodySet[0]['configurationSet'])
-            @current_resource.tags(bodySet[0]['tagSet'])
+            @current_resource.id(body_set[0]['dhcpOptionsId'])
+            @current_resource.configuration_set(body_set[0]['configurationSet'])
+            @current_resource.tags(body_set[0]['tagSet'])
           end
           Chef::Log.info("id: #{@current_resource.id}")
         end
