@@ -2,6 +2,8 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
+  include Galoshes::DeleteMixin
+
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/compute/security_groups'
@@ -86,16 +88,6 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
     new_ip_permissions.each do |new_permission|
       converge_if(!(cur_ip_permissions.include?(new_permission)), "add #{new_permission}") do
         @current_resource.authorize_port_range(new_permission[:range], new_permission)
-        new_resource.updated_by_last_action(true)
-      end
-    end
-  end
-
-  def action_delete
-    if @exists
-      converge_by("delete #{resource_str}") do
-        @current_resource.destroy
-        @exists = false
         new_resource.updated_by_last_action(true)
       end
     end

@@ -2,6 +2,8 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
+  include Galoshes::DeleteMixin
+
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/auto_scaling/groups'
@@ -40,16 +42,6 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
         Chef::Log.debug("create as result: #{result}")
         @exists = true
         new_resource.instances(@current_resource.instances) # FIX ME - is this necessary?
-        new_resource.updated_by_last_action(true)
-      end
-    end
-  end
-
-  def action_delete
-    if @exists
-      converge_by("delete #{resource_str}") do
-        @current_resource.destroy
-        @exists = false
         new_resource.updated_by_last_action(true)
       end
     end

@@ -2,6 +2,8 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
+  include Galoshes::DeleteMixin
+
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/dns/zones'
@@ -39,16 +41,6 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
         result = @current_resource.save
         Chef::Log.debug("create as result: #{result}")
         @exists = true
-        new_resource.updated_by_last_action(true)
-      end
-    end
-  end
-
-  def action_delete
-    if @exists
-      converge_by("Delete #{resource_str}") do
-        @current_resource.destroy
-        @exists = false
         new_resource.updated_by_last_action(true)
       end
     end
