@@ -53,8 +53,10 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
       Chef::Log.debug("filtered_options: #{filtered_options}")
       converged = true
       filtered_options.each do |attr|
-        verify_attribute(attr) do
-          @current_resource.send("#{attr}=", new_value)
+        verify_attribute(attr, false) do
+          value = new_resource.send(attr)
+          Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+          @current_resource.send("#{attr}=", value) unless value.nil?
           converged = false
         end
       end

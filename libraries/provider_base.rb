@@ -34,7 +34,7 @@ class Chef
         end
       end
 
-      def verify_attribute(attribute_sym, &fix_the_attribute)
+      def verify_attribute(attribute_sym, verify_result_status = true, &fix_the_attribute)
         Chef::Log.info("verify #{resource_str}.#{attribute_sym}")
 
         current_value = @current_resource.send(attribute_sym)
@@ -43,7 +43,7 @@ class Chef
 
         converge_if(current_value != new_value, "update '#{resource_str}.#{attribute_sym}' from '#{current_value}' to '#{new_value}'") do
           result = fix_the_attribute.call
-          verify_result(result, "'#{resource_str}.#{attribute_sym}' (#{fix_the_attribute})")
+          verify_result(result, "'#{resource_str}.#{attribute_sym}' (#{fix_the_attribute})") if verify_result_status
         end
       end
     end
