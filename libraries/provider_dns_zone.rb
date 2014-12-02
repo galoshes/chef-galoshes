@@ -31,7 +31,10 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
   def action_create
     unless @exists
       converge_by("Create #{resource_str}") do
-        @collection.model.attributes.each do |attr|
+        @current_resource = Fog::DNS::AWS::Zone.new(:service => @service)
+        create_attributes = [:domain, :description, :nameservers]
+        create_attributes.each do |attr|
+          Chef::Log.debug("attr: #{attr}")
           value = new_resource.send(attr)
           Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
           @current_resource.send("#{attr}=", value) unless value.nil?

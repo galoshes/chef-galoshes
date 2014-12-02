@@ -1,5 +1,5 @@
 require 'chefspec'
 
 RSpec.configure do |config|
-  #empty
+#  config.log_level = :debug
 end
