@@ -14,10 +14,10 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
 
     @fog_as = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::Compute::AWS::SecurityGroups.new(:service => @fog_as)
-    @current_resource = @collection.new(:name => new_resource.name, :service => @fog_as)
+    @current_resource = @collection.get(new_resource.name)
 
-    @current_resource.reload
-    @exists = !(@current_resource.group_id.nil?)
+    @exists = !(@current_resource.nil?)
+    @current_resource.reload if @exists
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
     Chef::Log.debug(@current_resource.inspect)
     if @exists
@@ -59,7 +59,7 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
       perm = {}
       perm[:range] = p[:range].is_a?(Fixnum) ? (p[:range]..p[:range]) : p[:range]
       perm[:ip_protocol] = p.include?(:ip_protocol) ? p[:ip_protocol] : 'tcp'
-      perm[:group] = p[:group] == :self ? @current_resource.group_id : p[:group]
+      perm[:group] = (p[:group] == :self) ? @current_resource.group_id : p[:group]
       perm
     end
 
