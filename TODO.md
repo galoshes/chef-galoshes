@@ -1,4 +1,3 @@
-- turn on test coverage
 - make more examples in recipes directory
 - take out that extra attribute I monkey patched to fog
 

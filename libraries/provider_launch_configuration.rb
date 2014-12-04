@@ -17,7 +17,6 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
     @fog_as = Fog::AWS::AutoScaling.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::AWS::AutoScaling::Configurations.new(:service => @fog_as)
     @current_resource = @collection.new(:id => new_resource.name, :service => @fog_as)
-    @current_resource.class.attribute(:placement_tenancy, :aliases => 'PlacementTenancy')  # This is missing from fog at the moment
 
     @current_resource.reload
     clarify_attributes

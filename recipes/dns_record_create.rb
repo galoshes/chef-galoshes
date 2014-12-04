@@ -10,6 +10,6 @@ galoshes_dns_record 'fake-subdomain' do
   ttl 60
   zone lazy { zone }
   type 'A'
-  value [ '10.0.0.1' ]
+  value ['10.0.0.1']
   action :create
 end
