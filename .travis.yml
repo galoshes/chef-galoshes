@@ -2,10 +2,12 @@ language: ruby
 script: "bundle exec rake"
 rvm:
   - 1.9.3
-  - 2.0.0
-  - 2.1.0
 notifications:
   email:
     - ben_pillet@yahoo.com
   on_success: change
   on_failure: always
+addons:
+  code_climate:
+    repo_token: 2c37c515771f34946385d3780e74ce0a802125a102165c9916fd42b30e203898
+
