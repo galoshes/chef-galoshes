@@ -3,8 +3,9 @@ galoshes
 
 This cookbook manages AWS services including: Autoscaling Groups, DNS Zones and Records, Elastic Load Balancers, Security Groups, VPC's and Subnets.
 
-[![Build Status](https://secure.travis-ci.org/galoshes/galoshes.png?branch=master)](http://travis-ci.org/galoshes/galoshes)
-[![Code Climate](https://codeclimate.com/github/galoshes/galoshes.png)](https://codeclimate.com/github/galoshes/galoshes)
+[![Build Status](https://secure.travis-ci.org/galoshes/galoshes.svg?branch=master)](http://travis-ci.org/galoshes/galoshes)
+[![Code Climate](https://codeclimate.com/github/galoshes/galoshes.svg)](https://codeclimate.com/github/galoshes/galoshes)
+[![Test Coverage](https://codeclimate.com/github/galoshes/galoshes/badges/coverage.svg)](https://codeclimate.com/github/galoshes/galoshes)
 
 ## Getting Started
 
