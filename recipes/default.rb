@@ -1,5 +1,3 @@
-include_recipe 'build-essential'
-
 if node['platform_family'] == 'debian'
   xml = package 'libxml2-dev' do
     action :nothing

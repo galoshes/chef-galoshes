@@ -1,6 +1,10 @@
 require 'rubocop/rake_task'
 require 'foodcritic'
 require 'foodcritic/rake_task'
+require 'rspec/core/rake_task'
+
+desc 'Run RSpec tests'
+RSpec::Core::RakeTask.new(:spec)
 
 desc 'Run RuboCop'
 RuboCop::RakeTask.new(:rubocop) do |task|
@@ -15,5 +19,5 @@ FoodCritic::Rake::LintTask.new(:lint) do |t|
 end
 
 desc 'Run all tests'
-task :test => [:lint, :rubocop]
+task :test => [:lint, :rubocop, :spec]
 task :default => :test
