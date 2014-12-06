@@ -1,5 +1,3 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
-
 require 'spec_helper'
 require 'fog'
 require 'fog/aws/models/dns/zones'
@@ -25,7 +23,7 @@ describe Chef::Provider::GaloshesDnsZone do
     provider.new_resource = new_resource
   end
 
-  context 'domain does not exist' do
+  context 'when domain does not exist' do
     before do
       provider.load_current_resource
     end
@@ -38,7 +36,7 @@ describe Chef::Provider::GaloshesDnsZone do
     end
   end
 
-  context 'domain does exist' do
+  context 'when domain does exist' do
     before do
       @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
       @service.zones.create(:domain => 'fake.domain.com.')
