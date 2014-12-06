@@ -19,5 +19,5 @@ FoodCritic::Rake::LintTask.new(:lint) do |t|
 end
 
 desc 'Run all tests'
-task :test => [:lint, :rubocop, :spec]
+task :test => [:spec, :lint, :rubocop,]
 task :default => :test
