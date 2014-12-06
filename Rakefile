@@ -4,9 +4,6 @@ require 'foodcritic/rake_task'
 require 'rspec/core/rake_task'
 require 'simplecov'
 require 'codeclimate-test-reporter'
-require 'coveralls/rake/task'
-
-Coveralls::RakeTask.new
 
 desc 'Run RSpec tests'
 RSpec::Core::RakeTask.new(:spec)
@@ -30,5 +27,5 @@ task :code_coverage do
 end
 
 desc 'Run all tests'
-task :test => [:spec, :lint, :rubocop, :code_coverage, 'coveralls:push']
+task :test => [:spec, :lint, :rubocop, :code_coverage]
 task :default => :test

@@ -1,8 +1,5 @@
 require 'simplecov'
 require 'codeclimate-test-reporter'
-require 'coveralls'
-
-Coveralls.wear_merged!
 
 SimpleCov.add_filter 'vendor'
 SimpleCov.formatters = Coveralls::SimpleCov::Formatter
