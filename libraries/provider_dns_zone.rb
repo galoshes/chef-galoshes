@@ -53,7 +53,7 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
 
   def action_update
     if @exists
-      filtered_options = @current_resource.class.attributes - [:tags]
+      filtered_options = @current_resource.class.attributes
       Chef::Log.debug("filtered_options: #{filtered_options}")
       converged = true
       filtered_options.each do |attr|
@@ -74,23 +74,6 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
           new_resource.updated_by_last_action(true)
         end
       end
-
-      new_tags = new_resource.tags.map do |k, v|
-        {
-          'ResourceId' => new_resource.name,
-          'PropagateAtLaunch' => true,
-          'Key' => k,
-          'Value' => v,
-          'ResourceType' => 'auto-scaling-group'
-        }
-      end
-      if new_tags != @current_resource.tags
-        converge_by("Updating #{resource_str}.tags") do
-          @fog_as.create_or_update_tags(new_tags)
-          new_resource.updated_by_last_action(true)
-        end
-      end
-
     end
   end
 end
