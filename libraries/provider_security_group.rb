@@ -30,7 +30,9 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
   def action_create
     unless @exists
       converge_by("create #{resource_str}") do
-        @collection.model.attributes.each do |attr|
+        @current_resource = @collection.new
+        create_attributes = [:name, :description, :group_id, :ip_permissions, :ip_permissions_egress, :vpc_id]
+        create_attributes.each do |attr|
           value = new_resource.send(attr)
           Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
           @current_resource.send("#{attr}=", value) unless value.nil?

@@ -21,7 +21,7 @@ elsif node['platform_family'] == 'rhel'
 end
 
 nokogiri = chef_gem 'nokogiri' do
-  # version '1.6.5'
+  version '>= 1.6.1'
 end
 if Gem::Specification.find_all_by_name('nokogiri').size == 0
   nokogiri.run_action(:install)
