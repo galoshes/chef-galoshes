@@ -1,6 +1,8 @@
 galoshes
 =============
 
+![galoshes](http://www.whistlestopgrill.com/site/wp-content/uploads/Don-t-forget-you-galoshes-flora-and-fauna-18590881-500-357.jpg)
+
 This cookbook manages AWS services including: Autoscaling Groups, DNS Zones and Records, Elastic Load Balancers, Security Groups, VPC's and Subnets.
 
 [![Build Status](https://secure.travis-ci.org/galoshes/galoshes.svg?branch=master)](http://travis-ci.org/galoshes/galoshes)
