@@ -2,12 +2,26 @@ require 'spec_helper'
 require 'fog'
 Fog.mock!
 
-describe 'galoshes::dns_record_create' do
-  let(:chef_run) do
-    ChefSpec::SoloRunner.new(:step_into => %w(galoshes_dns_zone galoshes_dns_record)).converge(described_recipe)
+describe Chef::Provider::GaloshesDnsRecord do
+  include_context 'common stuff'
+  subject(:provider) { described_class.new(resource, run_context) }
+
+  let(:resource) { Chef::Resource::GaloshesDnsRecord.new('fake_subdomain') }
+
+  before do
+    provider.new_resource = resource
   end
 
-  it 'creates the record' do
-    expect(chef_run).to create_galoshes_dns_record('fake-subdomain')
+  context 'when record does not exist' do
+    before do
+      provider.load_current_resource
+    end
+
+    describe '#load_current_resource' do
+      it 'is empty' do
+        expect(provider.exists).to eq(false)
+        expect(provider.current_resource).to eq(nil)
+      end
+    end
   end
 end

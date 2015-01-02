@@ -4,23 +4,13 @@ require 'fog/aws/models/dns/zones'
 Fog.mock!
 
 describe Chef::Provider::GaloshesDnsZone do
-  subject(:provider) { Chef::Provider::GaloshesDnsZone.new(new_resource, run_context) }
-  let(:log) { Logger.new(STDOUT).tap { |l| l.level = Logger::INFO } }
-  let(:node) do
-    node = Chef::Node.new
-    # node.automatic['platform'] = 'ubuntu'
-    # node.automatic['platform_version'] = '12.04'
-    node.normal['galoshes']['aws_access_key_id'] = 'fake_access_key'
-    node.normal['galoshes']['aws_secret_access_key'] = 'fake_secret_key'
-    node
-  end
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  include_context 'common stuff'
+  subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:new_resource) { Chef::Resource::GaloshesDnsZone.new('fake.domain.com.') }
+  let(:resource) { Chef::Resource::GaloshesDnsZone.new('fake.domain.com.') }
 
   before do
-    provider.new_resource = new_resource
+    provider.new_resource = resource
   end
 
   context 'when domain does not exist' do
@@ -32,6 +22,12 @@ describe Chef::Provider::GaloshesDnsZone do
       it 'is empty' do
         expect(provider.exists).to eq(false)
         expect(provider.current_resource).to eq(nil)
+      end
+    end
+    describe '#action_create' do
+      it 'is created' do
+        expect(provider.action_create).to eq([])
+        expect(events).not_to eq(nil)
       end
     end
   end
@@ -48,6 +44,12 @@ describe Chef::Provider::GaloshesDnsZone do
       it 'is populated' do
         expect(provider.exists).to eq(true)
         expect(provider.current_resource).not_to eq(nil)
+      end
+    end
+    describe '#action_create' do
+      it 'is created' do
+        expect(provider.action_create).to eq(nil)
+        expect(events).not_to eq(nil)
       end
     end
   end

@@ -17,11 +17,15 @@ require 'chef/event_dispatch/dispatcher'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'libraries'))
 
+require 'shared_stuff'
+
 require 'mixin_delete'
 require 'provider_base'
 
 require 'resource_dns_zone'
 require 'provider_dns_zone'
+require 'resource_dns_record'
+require 'provider_dns_record'
 
 # RSpec.configure do |config|
 #   config.color_enabled = true
