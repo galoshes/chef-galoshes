@@ -55,30 +55,30 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
   end
 
   def authorize_ip_permissions
-    Chef::Log.debug("new_resource.ip_permissions: #{new_resource.ip_permissions}")
-    Chef::Log.debug("current_reso.ip_permissions: #{@current_resource.ip_permissions}")
+    Chef::Log.info("new_resource.ip_permissions: #{new_resource.ip_permissions}")
+    Chef::Log.info("current_reso.ip_permissions: #{@current_resource.ip_permissions}")
     new_ip_permissions = new_resource.ip_permissions.map do |p|
       perm = {}
       perm[:range] = p[:range].is_a?(Fixnum) ? (p[:range]..p[:range]) : p[:range]
       perm[:ip_protocol] = p.include?(:ip_protocol) ? p[:ip_protocol] : 'tcp'
-      perm[:group] = (p[:group] == :self) ? @current_resource.group_id : p[:group]
+      if p.include?(:group)
+        perm[:group] = (p[:group] == :self) ? @current_resource.group_id : p[:group]
+      end
+      perm[:cidr_ip] = p[:cidr_ip] if p.include?(:cidr_ip)
       perm
     end
 
     cur_ip_permissions = @current_resource.ip_permissions.map do |p|
-      permission = {}
-      permission[:range] = (p['fromPort']..p['toPort'])
-      permission[:ip_protocol] =  p['ipProtocol']
-
-      if p['groups'].size > 0
-        permission[:group] = p['groups'][0]['groupId']
-      end
-
-      permission
+      perm = {}
+      perm[:range] = (p['fromPort']..p['toPort'])
+      perm[:ip_protocol] =  p['ipProtocol']
+      perm[:cidr_ip] = p['ipRanges'][0]['cidrIp'] if p['ipRanges'].size > 0
+      perm[:group] = p['groups'][0]['groupId'] if p['groups'].size > 0
+      perm
     end
 
-    Chef::Log.debug("new_ip: #{new_ip_permissions}")
-    Chef::Log.debug("cur_ip: #{cur_ip_permissions}")
+    Chef::Log.info("new_ip: #{new_ip_permissions}")
+    Chef::Log.info("cur_ip: #{cur_ip_permissions}")
 
     cur_ip_permissions.each do |cur_permission|
       converge_if(!(new_ip_permissions.include?(cur_permission)), "remove #{cur_permission}") do

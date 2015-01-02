@@ -21,8 +21,15 @@ elsif node['platform_family'] == 'rhel'
 end
 
 nokogiri = chef_gem 'nokogiri' do
-  version '>= 1.6.1'
+
+  if node['platform'] == 'mac_os_x'
+    version '>= 1.6.1'
+  else
+    version '= 1.6.1'
+  end
+
 end
+
 if Gem::Specification.find_all_by_name('nokogiri').size == 0
   nokogiri.run_action(:install)
 end

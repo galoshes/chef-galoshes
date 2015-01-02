@@ -76,7 +76,7 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
 
       new_resource.servers = []
       new_resource.instances.each do |instance|
-        instance_tags = new_resource.tags.merge('aws:autoscaling:groupName' => new_resource.name, 'Name' => "#{new_resource.name}-#{instance.id}")
+        instance_tags = new_resource.tags.merge('Name' => "#{new_resource.name}-#{instance.id}")
         server = Chef::Resource::GaloshesServer.new(instance.id, run_context)
         Chef::Log.debug("server: #{server.inspect}")
         server.filter_by('instance-id')

@@ -16,6 +16,7 @@ attribute :filter_by, :default => 'tag:Name'
 attribute :tags, :kind_of => Hash
 attribute :groups, :kind_of => Array
 attribute :security_group_ids, :kind_of => Array
+attribute :private_ip_address, :kind_of => String
 
 attribute :aws_access_key_id, :default => nil
 attribute :aws_secret_access_key, :default => nil
