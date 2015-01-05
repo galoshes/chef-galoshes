@@ -6,7 +6,10 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
     aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
     region = new_resource.region || node['galoshes']['region']
 
-    dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.name, :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    @collection = Fog::Compute::AWS::DhcpOptions.new(:service => @service)
+    dhcp_options = @collection.all('tag:Name' => new_resource.name)
+
     Chef::Log.debug("current: #{dhcp_options.inspect}")
     if dhcp_options.size != 1
       Chef::Log.info("Couldn't find dhcp_option[#{new_resource.name}]. Found #{dhcp_options.size}")
