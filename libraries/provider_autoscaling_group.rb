@@ -4,6 +4,8 @@ require_relative 'provider_base'
 class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
 
+  attr_reader :exists, :collection
+
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/auto_scaling/groups'
@@ -24,7 +26,7 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     if @exists
       new_resource.instances(@current_resource.instances)
     end
-    new_resource.launch_configuration_name = new_resource.launch_configuration.name
+    # FIX new_resource.launch_configuration_name = new_resource.launch_configuration.name
     @current_resource
   end
 

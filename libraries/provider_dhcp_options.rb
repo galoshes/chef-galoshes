@@ -1,17 +1,20 @@
-
 class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
+  attr_reader :exists
+
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesDhcpOptions.new(new_resource.name)
 
     dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.name)
     Chef::Log.debug("current: #{dhcp_options.inspect}")
     if dhcp_options.size != 1
-      Chef::Log.warn("Couldn't find dhcp_option[#{new_resource.name}]. Found #{dhcp_options.size}")
+      Chef::Log.info("Couldn't find dhcp_option[#{new_resource.name}]. Found #{dhcp_options.size}")
+      @exists = false
     else
       Chef::Log.info("Found dhcp_option[#{new_resource.name}]. Setting attributes.")
       @current_resource.id(dhcp_options[0].id)
       @current_resource.configuration_set(dhcp_options[0].dhcp_configuration_set)
       @current_resource.tags(dhcp_options[0].tag_set)
+      @exists = true
     end
 
     new_resource.tags['Name'] = new_resource.name

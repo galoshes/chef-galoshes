@@ -1,9 +1,10 @@
-
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
+  attr_reader :exists
+
   def clarify_attributes
-    @current_resource.placement_tenancy ||= 'default'
+    # @current_resource.placement_tenancy ||= 'default'
   end
 
   def load_current_resource
@@ -29,7 +30,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
 
   def action_create
     converge_if(!(@exists), "create #{resource_str}") do
-      create_attributes = [:id, :image_id, :instance_type, :security_groups, :block_device_mappings, :key_name, :user_data, :kernel_id, :ramdisk_id, :placement_tenancy]
+      create_attributes = [:id, :image_id, :instance_type, :security_groups, :block_device_mappings, :key_name, :user_data, :kernel_id, :ramdisk_id, ] # :placement_tenancy]
       create_attributes.each do |attr|
         value = new_resource.send(attr)
         Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
@@ -52,7 +53,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
   end
 
   def action_update
-    update_attributes = [:id, :image_id, :instance_type, :block_device_mappings, :key_name, :kernel_id, :ramdisk_id, :placement_tenancy]
+    update_attributes = [:id, :image_id, :instance_type, :block_device_mappings, :key_name, :kernel_id, :ramdisk_id, ] # :placement_tenancy]
     update_attributes.each do |attr|
       verify_attribute(attr) {}
     end

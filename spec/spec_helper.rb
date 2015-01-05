@@ -22,10 +22,10 @@ require 'shared_stuff'
 require 'mixin_delete'
 require 'provider_base'
 
-require 'resource_dns_zone'
-require 'provider_dns_zone'
-require 'resource_dns_record'
-require 'provider_dns_record'
+%w(autoscaling_group dns_zone dns_record dhcp_options launch_configuration load_balancer security_group server subnet vpc).each do |thing|
+  require "resource_#{thing}"
+  require "provider_#{thing}"
+end
 
 # RSpec.configure do |config|
 #   config.color_enabled = true
