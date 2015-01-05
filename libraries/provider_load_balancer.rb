@@ -7,7 +7,11 @@ require 'ostruct'
 class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   def load_current_resource
     @current_resource = OpenStruct.new
-    @current_resource.connection = Fog::AWS::ELB.new(:region => new_resource.region)
+
+    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
+    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
+    @current_resource.connection = Fog::AWS::ELB.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => new_resource.region)
+
     @current_resource.elb = @current_resource.connection.load_balancers.get(new_resource.name)
 
     Chef::Log.debug("current: #{@current_resource.elb.inspect}")
