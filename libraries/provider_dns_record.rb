@@ -2,7 +2,7 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
-  attr_reader :exists, :service, :collection
+  attr_reader :service, :collection
 
   def load_current_resource
     require 'fog'

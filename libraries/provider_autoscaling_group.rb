@@ -4,7 +4,7 @@ require_relative 'provider_base'
 class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
 
-  attr_reader :exists, :collection
+  attr_reader :collection
 
   def load_current_resource
     require 'fog'

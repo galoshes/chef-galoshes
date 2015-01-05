@@ -13,6 +13,7 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
     Chef::Log.debug("current: #{@current_resource.elb.inspect}")
     Chef::Log.debug("current.listeners: #{@current_resource.elb.listeners}") unless @current_resource.elb.nil?
 
+    @exists = !(@current_resource.elb.nil?)
     Chef::Log.debug("subnets: #{new_resource.subnets}")
 
     @current_resource

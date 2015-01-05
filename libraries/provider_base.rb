@@ -2,6 +2,8 @@
 class Chef
   class Provider
     class GaloshesBase < Chef::Provider
+      attr_reader :exists
+
       def con
         require 'fog'
         @con ||= Fog::Compute[:aws]

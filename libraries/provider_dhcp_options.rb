@@ -1,10 +1,12 @@
 class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
-  attr_reader :exists
-
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesDhcpOptions.new(new_resource.name)
 
-    dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.name)
+    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
+    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
+    region = new_resource.region || node['galoshes']['region']
+
+    dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.name, :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     Chef::Log.debug("current: #{dhcp_options.inspect}")
     if dhcp_options.size != 1
       Chef::Log.info("Couldn't find dhcp_option[#{new_resource.name}]. Found #{dhcp_options.size}")

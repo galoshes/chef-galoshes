@@ -4,7 +4,7 @@ require_relative 'provider_base'
 class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
 
-  attr_reader :exists, :service, :collection
+  attr_reader :service, :collection
 
   def load_current_resource
     require 'fog'
