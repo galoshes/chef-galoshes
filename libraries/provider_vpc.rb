@@ -14,7 +14,12 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesVpc.new(new_resource.name)
 
-    vpcs = Fog::Compute[:aws].vpcs.all('tag:Name' => new_resource.name)
+    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
+    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
+    region = new_resource.region || node['galoshes']['region']
+
+    @fog_as = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    vpcs = @fog_as.vpcs.all('tag:Name' => new_resource.name)
     Chef::Log.debug("current: #{vpcs.inspect}")
     if vpcs.size != 1
       Chef::Log.info("Couldn't find vpc[#{new_resource.name}]. Found #{vpcs.size}")

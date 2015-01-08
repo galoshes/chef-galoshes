@@ -3,9 +3,15 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesSubnet.new(new_resource.name)
 
+    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
+    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
+    region = new_resource.region || node['galoshes']['region']
+
+    @fog_as = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+
     if new_resource.vpc_id.nil?
       Chef::Log.debug('loading vpc_id from vpc')
-      vpcs = Fog::Compute[:aws].vpcs.all('tag:Name' => new_resource.vpc)
+      vpcs = @fog_as.vpcs.all('tag:Name' => new_resource.vpc)
       Chef::Log.debug("vpcs: #{vpcs.inspect}")
       if vpcs.size != 1
         Chef::Log.info("Couldn't find vpc[#{new_resource.vpc}]. Found #{vpcs.size}")
@@ -16,7 +22,7 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
     end
     Chef::Log.info("vpc_id: #{new_resource.vpc_id}")
 
-    subnets = Fog::Compute[:aws].subnets.all('tag:Name' => new_resource.name, 'vpc-id' => new_resource.vpc_id)
+    subnets = @fog_as.subnets.all('tag:Name' => new_resource.name, 'vpc-id' => new_resource.vpc_id)
     Chef::Log.debug("current: #{subnets.inspect}")
     if subnets.size != 1
       Chef::Log.info("Couldn't find subnet[#{new_resource.name}]. Found #{subnets.size}")

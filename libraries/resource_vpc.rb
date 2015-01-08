@@ -13,4 +13,7 @@ class Chef::Resource::GaloshesVpc < Chef::Resource::LWRPBase
   attribute :enable_dns_support, :kind_of => [TrueClass, FalseClass], :default => true
   attribute :enable_dns_hostnames, :kind_of => [TrueClass, FalseClass], :default => false
   attribute :tenancy, :equal_to => %w(default dedicated), :default => 'default'
+  attribute :aws_access_key_id, :default => nil
+  attribute :aws_secret_access_key, :default => nil
+  attribute :region, :default => 'us-east-1'
 end
