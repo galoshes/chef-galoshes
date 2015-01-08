@@ -17,9 +17,11 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
     vpcs = Fog::Compute[:aws].vpcs.all('tag:Name' => new_resource.name)
     Chef::Log.debug("current: #{vpcs.inspect}")
     if vpcs.size != 1
-      Chef::Log.warn("Couldn't find vpc[#{new_resource.name}]. Found #{vpcs.size}")
+      Chef::Log.info("Couldn't find vpc[#{new_resource.name}]. Found #{vpcs.size}")
+      @exists = false
     else
       Chef::Log.info("Found vpc[#{new_resource.name}]. Setting attributes.")
+      @exists = true
       @current_resource.id(vpcs[0].id)
       @current_resource.cidr_block(vpcs[0].cidr_block)
       @current_resource.dhcp_options_id(vpcs[0].dhcp_options_id)
@@ -35,7 +37,7 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
       dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.dhcp_options)
       Chef::Log.debug("dhcp_options: #{dhcp_options.inspect}")
       if dhcp_options.size != 1
-        Chef::Log.warn("Couldn't find dhcp_option[#{new_resource.dhcp_options}]. Found #{dhcp_options.size}")
+        Chef::Log.info("Couldn't find dhcp_option[#{new_resource.dhcp_options}]. Found #{dhcp_options.size}")
       else
         Chef::Log.info("Found dhcp_option[#{new_resource.dhcp_options}]. Setting attributes.")
         new_resource.dhcp_options_id(dhcp_options[0].id)

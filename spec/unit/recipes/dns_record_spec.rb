@@ -6,7 +6,15 @@ describe Chef::Provider::GaloshesDnsRecord do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesDnsRecord.new('fake_subdomain') }
+  let(:resource) do
+    record = Chef::Resource::GaloshesDnsRecord.new('fake_subdomain')
+    record.zone(existing_zone_resource)
+    record.type('A')
+    record.ttl(60)
+    record.value(['10.0.0.1'])
+
+    record
+  end
 
   before do
     provider.new_resource = resource
@@ -20,22 +28,19 @@ describe Chef::Provider::GaloshesDnsRecord do
     describe '#load_current_resource' do
       it 'is empty' do
         expect(provider.exists).to eq(false)
-        expect(provider.current_resource).to eq(nil)
+        expect(provider.current_resource.created_at).to eq(nil)
       end
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq([])
-        # expect(events).not_to eq(nil)
+        expect(provider.action_create).to eq([])
+        expect(events).not_to eq(nil)
       end
     end
   end
 
   context 'when resource does exist' do
     before do
-      # @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
-      # @service.zones.create(:domain => 'fake.domain.com.')
-      # log.debug("service.zones: #{@service.zones}")
       provider.load_current_resource
     end
 

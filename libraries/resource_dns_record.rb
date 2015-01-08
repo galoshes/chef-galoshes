@@ -8,12 +8,18 @@ class Chef::Resource::GaloshesDnsRecord < Chef::Resource::LWRPBase
 
   attribute :name, :name_attribute => true
 
+  attribute :zone, :required => true
+  attribute :type, :required => true
+
+  # one of these is required
+  attribute :alias_target
   attribute :value, :kind_of => Array
+
+  # if value is set, this is required
   attribute :ttl
-  attribute :type
+
   attribute :status
   attribute :created_at
-  attribute :alias_target
   attribute :change_id
   attribute :region
   attribute :weight
@@ -21,8 +27,6 @@ class Chef::Resource::GaloshesDnsRecord < Chef::Resource::LWRPBase
   attribute :failover
   attribute :geo_location
   attribute :health_check_id
-
-  attribute :zone
 
   attribute :aws_access_key_id, :default => nil
   attribute :aws_secret_access_key, :default => nil

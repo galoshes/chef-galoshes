@@ -10,4 +10,19 @@ shared_context 'common stuff' do
   end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
+  let(:existing_zone_resource) { Chef::Resource::GaloshesDnsZone.new('existing.fake.domain.com.') }
+  let(:existing_zone_provider) { Chef::Provider::GaloshesDnsZone.new(existing_zone_resource, run_context) }
+
+  before do
+    @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
+    @existing_zone = @service.zones.create(:domain => 'existing.fake.domain.com.')
+    log.debug "existing_zone: #{@existing_zone}"
+    existing_zone_provider.load_current_resource
+    log.debug "existing_zone_resource: #{existing_zone_resource}"
+  end
+
+  after do
+    @existing_zone.destroy
+  end
 end

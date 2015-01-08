@@ -2,11 +2,11 @@ require 'spec_helper'
 require 'fog'
 Fog.mock!
 
-describe Chef::Provider::GaloshesDnsRecord do
+describe Chef::Provider::GaloshesSubnet do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesDnsRecord.new('fake_subdomain') }
+  let(:resource) { Chef::Resource::GaloshesSubnet.new('fake_subdomain') }
 
   before do
     provider.new_resource = resource
@@ -20,7 +20,7 @@ describe Chef::Provider::GaloshesDnsRecord do
     describe '#load_current_resource' do
       it 'is empty' do
         expect(provider.exists).to eq(false)
-        expect(provider.current_resource).to eq(nil)
+        expect(provider.current_resource.id).to eq(nil)
       end
     end
     describe '#action_create' do

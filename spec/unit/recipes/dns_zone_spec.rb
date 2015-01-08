@@ -34,9 +34,6 @@ describe Chef::Provider::GaloshesDnsZone do
 
   context 'when domain does exist' do
     before do
-      @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
-      @service.zones.create(:domain => 'fake.domain.com.')
-      log.debug("service.zones: #{@service.zones}")
       provider.load_current_resource
     end
 
