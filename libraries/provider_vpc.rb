@@ -39,7 +39,7 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
     if new_resource.dhcp_options_id.nil?
       Chef::Log.debug('loading dhcp_options_id from dhcp_options attribute')
 
-      dhcp_options = Fog::Compute[:aws].dhcp_options.all('tag:Name' => new_resource.dhcp_options)
+      dhcp_options = @fog_as.dhcp_options.all('tag:Name' => new_resource.dhcp_options)
       Chef::Log.debug("dhcp_options: #{dhcp_options.inspect}")
       if dhcp_options.size != 1
         Chef::Log.info("Couldn't find dhcp_option[#{new_resource.dhcp_options}]. Found #{dhcp_options.size}")
