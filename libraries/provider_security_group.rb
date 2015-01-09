@@ -49,6 +49,7 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
 
         authorize_ip_permissions
 
+        new_resource.group_id(@current_resource.group_id)
         new_resource.updated_by_last_action(true)
       end
     end

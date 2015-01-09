@@ -46,6 +46,7 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
         result = @current_resource.save
         Chef::Log.debug("create as result: #{result}")
         @exists = true
+        new_resource.id(@current_resource.id)
         new_resource.updated_by_last_action(true)
       end
     end
