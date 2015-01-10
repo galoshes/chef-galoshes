@@ -41,6 +41,7 @@ shared_context 'common stuff' do
   let(:existing_load_balancer_resource) do
     resource = Chef::Resource::GaloshesLoadBalancer.new('existing load balancer')
     resource.security_groups([])
+    resource.subnet_ids([])
     resource
   end
   let(:existing_load_balancer_provider) { Chef::Provider::GaloshesLoadBalancer.new(existing_load_balancer_resource, run_context) }

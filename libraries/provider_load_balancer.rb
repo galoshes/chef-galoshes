@@ -43,10 +43,19 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   end
 
   def action_update
-    verify_attribute(:security_groups, false) do
-      @service.apply_security_groups(new_resource.security_groups, @current_resource.id)
+    verify_attribute(:security_groups) do
       @current_resource.security_groups = new_resource.security_groups
-      new_resource.updated_by_last_action(true)
+      @service.apply_security_groups(new_resource.security_groups, @current_resource.id)
+    end
+
+    verify_attribute(:subnet_ids) do
+      @current_resource.subnet_ids = new_resource.subnet_ids
+      @service.enable_subnets(new_resource.subnet_ids, @current_resource.id)
+    end
+
+    verify_attribute(:health_check) do
+      @current_resource.health_check = new_resource.health_check
+      @service.configure_health_check(new_resource.name, @current_resource.health_check)
     end
   end
 end

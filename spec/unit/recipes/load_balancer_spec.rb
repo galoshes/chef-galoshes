@@ -15,6 +15,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
     let(:resource) do
       resource = Chef::Resource::GaloshesLoadBalancer.new('new load balancer')
       resource.security_groups([existing_security_group_resource_a.group_id])
+      resource.subnet_ids([])
       resource
     end
 
@@ -26,7 +27,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq([])
+        provider.action_create
         expect(resource.dns_name).not_to eq(nil)
         expect(events).not_to eq(nil)
       end
@@ -41,6 +42,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
     let(:resource) do
       resource = Chef::Resource::GaloshesLoadBalancer.new('existing load balancer')
       resource.security_groups(new_security_groups)
+      resource.subnet_ids([])
       resource
     end
 
@@ -52,7 +54,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq([])
+        provider.action_create
         expect(provider.current_resource.security_groups).to eq(new_security_groups)
         expect(events).not_to eq(nil)
       end
