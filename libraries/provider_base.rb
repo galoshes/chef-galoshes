@@ -50,7 +50,7 @@ class Chef
         Chef::Log.info("#{resource_str}.#{attribute_sym} cur: #{current_value.inspect} new: #{new_value.inspect}")
 
         converge_if(current_value != new_value, "update '#{resource_str}.#{attribute_sym}' from '#{current_value}' to '#{new_value}'") do
-          Chef::Log.info("converging")
+          Chef::Log.info('converging')
           result = fix_the_attribute.call
           verify_result(result, "'#{resource_str}.#{attribute_sym}' (#{fix_the_attribute})") if verify_result_status
         end

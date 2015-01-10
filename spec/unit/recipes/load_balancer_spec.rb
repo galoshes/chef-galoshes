@@ -35,10 +35,12 @@ describe Chef::Provider::GaloshesLoadBalancer do
   end
 
   context 'when resource does exist' do
-    let(:new_security_groups) { [
+    let(:new_security_groups) do
+      [
         existing_security_group_resource_b.group_id,
         existing_security_group_resource_c.group_id,
-      ]}
+      ]
+    end
     let(:resource) do
       resource = Chef::Resource::GaloshesLoadBalancer.new('existing load balancer')
       resource.security_groups(new_security_groups)
