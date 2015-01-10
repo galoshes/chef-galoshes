@@ -29,7 +29,7 @@ class Chef
       end
 
       def converge_unless(condition, message, &block)
-        if !condition
+        unless condition
           converge_by(message, &block)
         end
       end

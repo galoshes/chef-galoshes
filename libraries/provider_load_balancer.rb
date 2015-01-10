@@ -26,9 +26,9 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
     converge_unless(@exists, "create #{resource_str}") do
       create_attributes = [:id, :availability_zones, :security_groups, :scheme, :listeners, :subnet_ids, :health_check]
       create_attributes.each do |attr|
-	value = new_resource.send(attr)
-	Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-	@current_resource.send("#{attr}=", value) unless value.nil?
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource.send("#{attr}=", value) unless value.nil?
       end
       Chef::Log.debug("current_resource before save: #{current_resource}")
 
