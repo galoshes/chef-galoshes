@@ -39,5 +39,14 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
       new_resource.glean_read_only_attributes(@current_resource)
       new_resource.updated_by_last_action(true)
     end
+    action_update
+  end
+
+  def action_update
+    verify_attribute(:security_groups, false) do
+      @service.apply_security_groups(new_resource.security_groups, @current_resource.id)
+      @current_resource.security_groups = new_resource.security_groups
+      new_resource.updated_by_last_action(true)
+    end
   end
 end

@@ -14,7 +14,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
   context 'when resource does not exist' do
     let(:resource) do
       resource = Chef::Resource::GaloshesLoadBalancer.new('new load balancer')
-      resource.security_groups([existing_security_group_resource.group_id])
+      resource.security_groups([existing_security_group_resource_a.group_id])
       resource
     end
 
@@ -34,7 +34,15 @@ describe Chef::Provider::GaloshesLoadBalancer do
   end
 
   context 'when resource does exist' do
-    let(:resource) { Chef::Resource::GaloshesLoadBalancer.new('existing load balancer') }
+    let(:new_security_groups) { [
+        existing_security_group_resource_b.group_id,
+        existing_security_group_resource_c.group_id,
+      ]}
+    let(:resource) do
+      resource = Chef::Resource::GaloshesLoadBalancer.new('existing load balancer')
+      resource.security_groups(new_security_groups)
+      resource
+    end
 
     describe '#load_current_resource' do
       it 'is populated' do
@@ -44,7 +52,8 @@ describe Chef::Provider::GaloshesLoadBalancer do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq(nil)
+        expect(provider.action_create).to eq([])
+        expect(provider.current_resource.security_groups).to eq(new_security_groups)
         expect(events).not_to eq(nil)
       end
     end

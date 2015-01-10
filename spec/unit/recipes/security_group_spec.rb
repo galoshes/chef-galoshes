@@ -35,7 +35,7 @@ describe Chef::Provider::GaloshesSecurityGroup do
   end
 
   context 'when resource does exist' do
-    let(:resource) { Chef::Resource::GaloshesSecurityGroup.new('existing security group') }
+    let(:resource) { Chef::Resource::GaloshesSecurityGroup.new('existing security group a') }
 
     describe '#load_current_resource' do
       it 'is populated' do

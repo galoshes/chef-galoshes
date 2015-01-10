@@ -24,17 +24,23 @@ shared_context 'common stuff' do
   end
   let(:existing_dns_record_provider) { Chef::Provider::GaloshesDnsRecord.new(existing_dns_record_resource, run_context) }
 
-  let(:existing_security_group_resource) do
-    resource = Chef::Resource::GaloshesSecurityGroup.new('existing security group')
-    resource.description('existing security group')
+  # defines security groups as follows
+  # :existing_security_group_resource_#{name}
+  # :existing_security_group_provider_#{name}
+  def self.security_group(name)
+    resource = Chef::Resource::GaloshesSecurityGroup.new("existing security group #{name}")
+    resource.description("existing security group #{name}")
     resource.ip_permissions([])
-    resource
+    let("existing_security_group_resource_#{name}".to_sym) { resource }
+    let("existing_security_group_provider_#{name}".to_sym) { Chef::Provider::GaloshesSecurityGroup.new(resource, run_context) }
   end
-  let(:existing_security_group_provider) { Chef::Provider::GaloshesSecurityGroup.new(existing_security_group_resource, run_context) }
+  security_group('a')
+  security_group('b')
+  security_group('c')
 
   let(:existing_load_balancer_resource) do
     resource = Chef::Resource::GaloshesLoadBalancer.new('existing load balancer')
-
+    resource.security_groups([])
     resource
   end
   let(:existing_load_balancer_provider) { Chef::Provider::GaloshesLoadBalancer.new(existing_load_balancer_resource, run_context) }
@@ -48,8 +54,12 @@ shared_context 'common stuff' do
     existing_dns_record_provider.action_create
     # puts "existing_dns_record_resource: #{existing_dns_record_resource.inspect}"
 
-    existing_security_group_provider.load_current_resource
-    existing_security_group_provider.action_create
+    existing_security_group_provider_a.load_current_resource
+    existing_security_group_provider_a.action_create
+    existing_security_group_provider_b.load_current_resource
+    existing_security_group_provider_b.action_create
+    existing_security_group_provider_c.load_current_resource
+    existing_security_group_provider_c.action_create
     # puts "existing_sec_group_resource: #{existing_security_group_resource.inspect}"
 
     existing_load_balancer_provider.load_current_resource
@@ -59,7 +69,9 @@ shared_context 'common stuff' do
   after do
     # in reverse order
     existing_load_balancer_provider.action_delete
-    existing_security_group_provider.action_delete
+    existing_security_group_provider_c.action_delete
+    existing_security_group_provider_b.action_delete
+    existing_security_group_provider_a.action_delete
     existing_dns_record_provider.action_delete
     existing_zone_provider.action_delete
   end
