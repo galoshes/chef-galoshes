@@ -13,9 +13,9 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
     @service = Fog::AWS::ELB.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => new_resource.region)
     @collection = Fog::AWS::ELB::LoadBalancers.new(:service => @service)
     @current_resource = @collection.new(:id => new_resource.name, :service => @service)
-    # puts "curr: #{@current_resource}"
+    Chef::Log.debug "curr: #{@current_resource}"
     @current_resource.reload
-    # puts "curr.reload: #{@current_resource}"
+    Chef::Log.debug "curr.reload: #{@current_resource}"
     @exists = !(@current_resource.created_at.nil?)
     if @exists
     end

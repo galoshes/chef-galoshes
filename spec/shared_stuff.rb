@@ -42,17 +42,15 @@ shared_context 'common stuff' do
   before do
     existing_zone_provider.load_current_resource
     existing_zone_provider.action_create
-    puts "existing_zone_resource: #{existing_zone_resource.inspect}"
+    # puts "existing_zone_resource: #{existing_zone_resource.inspect}"
 
     existing_dns_record_provider.load_current_resource
     existing_dns_record_provider.action_create
-    puts "existing_dns_record_resource: #{existing_dns_record_resource.inspect}"
+    # puts "existing_dns_record_resource: #{existing_dns_record_resource.inspect}"
 
     existing_security_group_provider.load_current_resource
     existing_security_group_provider.action_create
     # puts "existing_sec_group_resource: #{existing_security_group_resource.inspect}"
-    # puts "existing_sec_group_provider: #{existing_security_group_provider.inspect}"
-    # puts "existing_group_id: #{existing_security_group_resource.group_id}"
 
     existing_load_balancer_provider.load_current_resource
     existing_load_balancer_provider.action_create
@@ -60,9 +58,10 @@ shared_context 'common stuff' do
   end
 
   after do
-    existing_zone_provider.action_delete
-    # existing_dns_record_provider.action_delete
-    existing_security_group_provider.action_delete
+    # in reverse order
     existing_load_balancer_provider.action_delete
+    existing_security_group_provider.action_delete
+    existing_dns_record_provider.action_delete
+    existing_zone_provider.action_delete
   end
 end
