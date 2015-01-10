@@ -27,7 +27,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
     describe '#action_create' do
       it 'is created' do
         expect(provider.action_create).to eq([])
-        expect(provider.current_resource.dns_name).not_to eq(nil)
+        expect(resource.dns_name).not_to eq(nil)
         expect(events).not_to eq(nil)
       end
     end

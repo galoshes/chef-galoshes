@@ -28,6 +28,12 @@ class Chef
         end
       end
 
+      def converge_unless(condition, message, &block)
+        if !condition
+          converge_by(message, &block)
+        end
+      end
+
       def verify_result(result, msg)
         unless result.nil?
           Chef::Log.debug("result: #{result.status} msg: #{msg}")

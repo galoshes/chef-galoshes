@@ -21,7 +21,11 @@ class Chef::Resource::GaloshesLoadBalancer < Chef::Resource::LWRPBase
   attribute :aws_secret_access_key, :default => nil
   attribute :region, :default => 'us-east-1'
 
-  attribute :dns_name
-  attribute :created_at
-  attribute :instances
+  attr_reader :dns_name, :created_at, :instances
+
+  def glean_read_only_attributes(source)
+    @dns_name = source.dns_name
+    @created_at = source.created_at
+    @instances = source.instances
+  end
 end
