@@ -54,7 +54,6 @@ shared_context 'common stuff' do
 
     existing_load_balancer_provider.load_current_resource
     existing_load_balancer_provider.action_create
-
   end
 
   after do
