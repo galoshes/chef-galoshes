@@ -17,14 +17,14 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
     Chef::Log.debug("zone: #{@zone.inspect}")
     @collection.zone = @zone
 
-@collection.all.each do |record|
-  puts "record: #{record.name}"
-end
+    @collection.all.each do |record|
+      puts "record: #{record.name}"
+    end
 
     @fqdn = "#{new_resource.name}.#{@zone.domain}"
     @current_resource = @collection.new(:name => @fqdn, :service => @service)
     @current_resource.reload
-puts "current_resource after reload: #{@current_resource.inspect}"
+    puts "current_resource after reload: #{@current_resource.inspect}"
     @exists = !(@current_resource.type.nil?)
     Chef::Log.debug("DnsRecord current_resource: #{@current_resource} exists: #{@exists}")
     puts "curr: #{@current_resource.inspect}"
@@ -35,23 +35,23 @@ puts "current_resource after reload: #{@current_resource.inspect}"
   def action_create
     unless @exists
       converge_by("create #{new_resource.resource_name} for #{@fqdn}") do
-	attributes = [:value, :ttl, :type, :alias_target, :region, :zone]
-	attributes.each do |attr|
-	  value = new_resource.send(attr)
-	  Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-	  @current_resource.send("#{attr}=", value) unless value.nil?
-	end
-	Chef::Log.debug("current_resource before save: #{current_resource}")
-puts "curr: #{@current_resource.inspect}"
-puts "curr.zone: #{@current_resource.zone}"
-puts "curr.zone.id: #{@current_resource.zone.id}"
-puts "curr.zone: #{@current_resource.zone.inspect}"
-	result = @current_resource.save
-	Chef::Log.debug("create as result: #{result}")
-puts "current_resource after .save: #{@current_resource.inspect}"
-	@exists = true
+        attributes = [:value, :ttl, :type, :alias_target, :region, :zone]
+        attributes.each do |attr|
+          value = new_resource.send(attr)
+          Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+          @current_resource.send("#{attr}=", value) unless value.nil?
+        end
+        Chef::Log.debug("current_resource before save: #{current_resource}")
+        puts "curr: #{@current_resource.inspect}"
+        puts "curr.zone: #{@current_resource.zone}"
+        puts "curr.zone.id: #{@current_resource.zone.id}"
+        puts "curr.zone: #{@current_resource.zone.inspect}"
+        result = @current_resource.save
+        Chef::Log.debug("create as result: #{result}")
+        puts "current_resource after .save: #{@current_resource.inspect}"
+        @exists = true
         new_resource.created_at(@current_resource.created_at)
-	new_resource.updated_by_last_action(true)
+        new_resource.updated_by_last_action(true)
       end
     end
   end
