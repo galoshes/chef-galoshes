@@ -24,7 +24,7 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
     @fqdn = "#{new_resource.name}.#{@zone.domain}"
     @current_resource = @collection.new(:name => @fqdn, :service => @service)
     @current_resource.reload
-    Chef::Log.debug "current_resource after reload: #{@current_resource.inspect}"
+    Chef::Log.debug "current_resource after reload: #{@current_resource}"
     @exists = !(@current_resource.type.nil?)
     Chef::Log.debug("DnsRecord current_resource: #{@current_resource} exists: #{@exists}")
     Chef::Log.debug "curr: #{@current_resource.inspect}"
