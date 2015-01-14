@@ -6,7 +6,6 @@ describe Chef::Provider::GaloshesDnsRecord do
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
-    existing_dns_record
     provider.new_resource = resource
     provider.load_current_resource
   end

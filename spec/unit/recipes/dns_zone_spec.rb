@@ -7,7 +7,6 @@ describe Chef::Provider::GaloshesDnsZone do
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
-    existing_zone
     provider.new_resource = resource
     provider.load_current_resource
   end
