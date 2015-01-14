@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'fog'
-Fog.mock!
 
 describe Chef::Provider::GaloshesAutoscalingGroup do
   include_context 'common stuff'

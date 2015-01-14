@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'fog'
-Fog.mock!
 
 describe Chef::Provider::GaloshesSecurityGroup do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
+    existing_security_group_resource_a
     provider.new_resource = resource
     provider.load_current_resource
   end

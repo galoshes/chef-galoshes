@@ -1,22 +1,19 @@
 require 'spec_helper'
 require 'fog'
 require 'fog/aws/models/dns/zones'
-Fog.mock!
 
 describe Chef::Provider::GaloshesDnsZone do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesDnsZone.new('fake.domain.com.') }
-
   before do
+    existing_zone_resource
     provider.new_resource = resource
+    provider.load_current_resource
   end
 
   context 'when domain does not exist' do
-    before do
-      provider.load_current_resource
-    end
+    let(:resource) { Chef::Resource::GaloshesDnsZone.new('fake.domain.com.') }
 
     describe '#load_current_resource' do
       it 'is empty' do
@@ -34,8 +31,10 @@ describe Chef::Provider::GaloshesDnsZone do
 
   context 'when domain does exist' do
     before do
-      provider.load_current_resource
+      existing_zone_resource
     end
+    let(:resource) { Chef::Resource::GaloshesDnsZone.new('existing.fake.domain.com.') }
+
 
     describe '#load_current_resource' do
       it 'is populated' do

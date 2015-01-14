@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'fog'
-Fog.mock!
 
 describe Chef::Provider::GaloshesLaunchConfiguration do
   include_context 'common stuff'

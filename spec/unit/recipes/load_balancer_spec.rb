@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'fog'
-Fog.mock!
 
 describe Chef::Provider::GaloshesLoadBalancer do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
+    existing_load_balancer_resource
     provider.new_resource = resource
     provider.load_current_resource
   end

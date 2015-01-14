@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'fog'
-Fog.mock!
 
 describe 'galoshes::dns_record_create' do
   let(:chef_run) do
