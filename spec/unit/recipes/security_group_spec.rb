@@ -26,8 +26,7 @@ describe Chef::Provider::GaloshesSecurityGroup do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq([])
-        expect(events).not_to eq(nil)
+        provider.action_create
         expect(resource.group_id).not_to eq(nil)
       end
     end
@@ -45,8 +44,7 @@ describe Chef::Provider::GaloshesSecurityGroup do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq(nil)
-        expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end

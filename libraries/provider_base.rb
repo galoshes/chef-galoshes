@@ -44,6 +44,7 @@ class Chef
 
       def verify_attribute(attribute_sym, verify_result_status = true, &fix_the_attribute)
         Chef::Log.info("verify #{resource_str}.#{attribute_sym}")
+        fix_the_attribute ||= lambda {}
 
         current_value = @current_resource.send(attribute_sym)
         new_value = new_resource.send(attribute_sym)

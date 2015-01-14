@@ -8,8 +8,10 @@ shared_context 'common stuff' do
     node.normal['galoshes']['aws_secret_access_key'] = 'fake_secret_key'
     node
   end
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:events_formatter) { Chef::Formatters::Minimal.new(nil, nil) }
+  let(:events_dispatcher) { Chef::EventDispatch::Dispatcher.new(events_formatter) }
+  let(:run_context) { Chef::RunContext.new(node, {}, events_dispatcher) }
+  let(:updates) { events_formatter.updates_by_resource[resource.name] }
 
   let(:existing_zone) do
     resource = Chef::Resource::GaloshesDnsZone.new('existing.fake.domain.com.')
@@ -65,6 +67,7 @@ shared_context 'common stuff' do
     resource = Chef::Resource::GaloshesLaunchConfiguration.new('existing launch configuration')
     resource.image_id('ami-123')
     resource.instance_type('m3.large')
+    resource.user_data('existing user data')
     provider = Chef::Provider::GaloshesLaunchConfiguration.new(resource, run_context)
     provider.load_current_resource
     provider.action_create

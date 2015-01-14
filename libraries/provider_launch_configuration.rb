@@ -26,7 +26,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    converge_if(!(@exists), "create #{resource_str}") do
+    converge_unless(@exists, "create #{resource_str}") do
       create_attributes = [:id, :image_id, :instance_type, :security_groups, :block_device_mappings, :key_name, :user_data, :kernel_id, :ramdisk_id,] # :placement_tenancy]
       create_attributes.each do |attr|
         value = new_resource.send(attr)
@@ -38,7 +38,9 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
       result = @current_resource.save
       @exists = !(result.nil?)
       clarify_attributes
+      new_resource.updated_by_last_action(true)
     end
+    verify_attribute(:user_data, false) { new_resource.updated_by_last_action(true) }
   end
 
   def action_delete

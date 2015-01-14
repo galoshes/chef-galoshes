@@ -28,8 +28,8 @@ describe Chef::Provider::GaloshesDnsRecord do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq([])
-        expect(events).not_to eq(nil)
+        provider.action_create
+        expect(updates).to include("create #{provider.resource_str}")
       end
     end
   end
@@ -53,8 +53,7 @@ describe Chef::Provider::GaloshesDnsRecord do
 
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq(nil)
-        expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end

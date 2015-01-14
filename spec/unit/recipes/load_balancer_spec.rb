@@ -28,7 +28,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
       it 'is created' do
         provider.action_create
         expect(resource.dns_name).not_to eq(nil)
-        expect(events).not_to eq(nil)
+        expect(updates).to include("create #{provider.resource_str}")
       end
     end
   end
@@ -57,7 +57,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
       it 'is created' do
         provider.action_create
         expect(provider.current_resource.security_groups).to eq(new_security_groups)
-        expect(events).not_to eq(nil)
+        expect(updates).to include("create #{provider.resource_str}")
       end
     end
   end

@@ -12,9 +12,10 @@ describe Chef::Provider::GaloshesLaunchConfiguration do
 
   context 'when resource does not exist' do
     let(:resource) do
-      resource = Chef::Resource::GaloshesLaunchConfiguration.new('fake_subdomain')
+      resource = Chef::Resource::GaloshesLaunchConfiguration.new('new_launch_configuration')
       resource.image_id('ami-456')
       resource.instance_type('m1.small')
+      resource.user_data('new user data')
       resource
     end
 
@@ -26,14 +27,19 @@ describe Chef::Provider::GaloshesLaunchConfiguration do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq([])
-        expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end
 
   context 'when resource does exist' do
-    let(:resource) { Chef::Resource::GaloshesLaunchConfiguration.new('existing launch configuration') }
+    let(:resource) do
+      resource = Chef::Resource::GaloshesLaunchConfiguration.new('existing launch configuration')
+      resource.image_id('ami-456')
+      resource.instance_type('m1.small')
+      resource.user_data('new user data')
+      resource
+    end
 
     describe '#load_current_resource' do
       it 'is populated' do
@@ -43,8 +49,9 @@ describe Chef::Provider::GaloshesLaunchConfiguration do
     end
     describe '#action_create' do
       it 'is created' do
-        expect(provider.action_create).to eq(nil)
-        expect(events).not_to eq(nil)
+        provider.action_create
+        expect(provider.current_resource.user_data).not_to eq(resource.user_data)
+        expect(updates).to include("update '#{provider.resource_str}.user_data' from 'existing user data' to 'new user data'")
       end
     end
   end
