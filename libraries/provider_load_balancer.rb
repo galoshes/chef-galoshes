@@ -21,7 +21,7 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    Chef::Log.debug("new_resource: #{new_resource.inspect}")
+    Chef::Log.debug("new_resource: #{new_resource}")
 
     converge_unless(@exists, "create #{resource_str}") do
       create_attributes = [:id, :availability_zones, :security_groups, :scheme, :listeners, :subnet_ids, :health_check]

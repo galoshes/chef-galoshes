@@ -56,7 +56,7 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    Chef::Log.debug("new_resource: #{new_resource.inspect}")
+    Chef::Log.debug("new_resource: #{new_resource}")
 
     converge_if(@current_resource.id.nil?, "Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
       result = con.create_vpc(new_resource.cidr_block, 'InstanceTenancy' => new_resource.tenancy)

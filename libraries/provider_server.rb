@@ -14,7 +14,7 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
 
     @exists = !(@current_resource.nil?)
     Chef::Log.info("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
-    Chef::Log.debug(@current_resource.inspect)
+    Chef::Log.debug(@current_resource)
 
     if @exists
       new_resource.private_ip_address(@current_resource.private_ip_address)

@@ -40,13 +40,13 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
         @current_resource.send("#{attr}=", value) unless value.nil?
       end
       Chef::Log.debug("current_resource before save: #{current_resource}")
-      # Chef::Log.debug "curr: #{@current_resource.inspect}"
+      # Chef::Log.debug "curr: #{@current_resource}"
       Chef::Log.debug "curr.zone: #{@current_resource.zone}"
       Chef::Log.debug "curr.zone.id: #{@current_resource.zone.id}"
       Chef::Log.debug "curr.zone: #{@current_resource.zone.inspect}"
       result = @current_resource.save
       Chef::Log.debug("create as result: #{result}")
-      # Chef::Log.debug "current_resource after .save: #{@current_resource.inspect}"
+      # Chef::Log.debug "current_resource after .save: #{@current_resource}"
       @exists = true
       new_resource.created_at(@current_resource.created_at)
       new_resource.updated_by_last_action(true)
@@ -55,7 +55,7 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
 
   def action_delete
     converge_if(@exists, "delete #{resource_str}") do
-      Chef::Log.debug "curr: #{@current_resource.inspect}"
+      Chef::Log.debug "curr: #{@current_resource}"
       Chef::Log.debug "curr.zone: #{@current_resource.zone}"
       Chef::Log.debug "curr.zone.id: #{@current_resource.zone.id}"
       Chef::Log.debug "curr.zone: #{@current_resource.zone.inspect}"

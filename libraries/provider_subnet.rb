@@ -43,7 +43,7 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    Chef::Log.debug("new_resource: #{new_resource.inspect}")
+    Chef::Log.debug("new_resource: #{new_resource}")
 
     if @current_resource.id.nil?
       converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
