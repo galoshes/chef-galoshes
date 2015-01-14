@@ -30,21 +30,19 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    unless @exists
-      converge_by("create #{resource_str}") do
-        @collection.model.attributes.each do |attr|
-          value = new_resource.send(attr)
-          Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-          @current_resource.send("#{attr}=", value) unless value.nil?
-        end
-        Chef::Log.debug("current_resource before save: #{current_resource}")
-
-        result = @current_resource.save
-        Chef::Log.debug("create as result: #{result}")
-        @exists = true
-        new_resource.instances(@current_resource.instances) # FIX ME - is this necessary?
-        new_resource.updated_by_last_action(true)
+    converge_unless(@exists, "create #{resource_str}") do
+      @collection.model.attributes.each do |attr|
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource.send("#{attr}=", value) unless value.nil?
       end
+      Chef::Log.debug("current_resource before save: #{current_resource}")
+
+      result = @current_resource.save
+      Chef::Log.debug("create as result: #{result}")
+      @exists = true
+      new_resource.instances(@current_resource.instances) # FIX ME - is this necessary?
+      new_resource.updated_by_last_action(true)
     end
   end
 

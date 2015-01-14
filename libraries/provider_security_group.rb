@@ -27,30 +27,28 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
   end
 
   def action_create
-    unless @exists
-      converge_by("create #{resource_str}") do
-        @current_resource = @collection.new
-        create_attributes = [:name, :description, :group_id, :ip_permissions, :ip_permissions_egress, :vpc_id]
-        create_attributes.each do |attr|
-          value = new_resource.send(attr)
-          Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-          @current_resource.send("#{attr}=", value) unless value.nil?
-        end
-        Chef::Log.debug("current_resource before save: #{@current_resource}")
-
-        result = @current_resource.save
-        Chef::Log.debug("create as result: #{result}")
-        Chef::Log.debug("current_resource after save: #{@current_resource}")
-        @exists = true
-
-        @current_resource.reload
-        Chef::Log.debug("current_resource after reload: #{@current_resource}")
-
-        authorize_ip_permissions
-
-        new_resource.group_id(@current_resource.group_id)
-        new_resource.updated_by_last_action(true)
+    converge_unless(@exists, "create #{resource_str}") do
+      @current_resource = @collection.new
+      create_attributes = [:name, :description, :group_id, :ip_permissions, :ip_permissions_egress, :vpc_id]
+      create_attributes.each do |attr|
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource.send("#{attr}=", value) unless value.nil?
       end
+      Chef::Log.debug("current_resource before save: #{@current_resource}")
+
+      result = @current_resource.save
+      Chef::Log.debug("create as result: #{result}")
+      Chef::Log.debug("current_resource after save: #{@current_resource}")
+      @exists = true
+
+      @current_resource.reload
+      Chef::Log.debug("current_resource after reload: #{@current_resource}")
+
+      authorize_ip_permissions
+
+      new_resource.group_id(@current_resource.group_id)
+      new_resource.updated_by_last_action(true)
     end
   end
 
