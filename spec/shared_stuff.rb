@@ -64,5 +64,11 @@ shared_context 'common stuff' do
   before do
     Fog.mock!
     Fog::Mock.reset
+    existing_zone
+    existing_dns_record
+    existing_security_group_a
+    existing_security_group_b
+    existing_security_group_c
+    existing_load_balancer
   end
 end
