@@ -6,7 +6,7 @@ describe Chef::Provider::GaloshesDnsRecord do
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
-    existing_dns_record_resource
+    existing_dns_record
     provider.new_resource = resource
     provider.load_current_resource
   end
@@ -14,7 +14,7 @@ describe Chef::Provider::GaloshesDnsRecord do
   context 'when resource does not exist' do
     let(:resource) do
       record = Chef::Resource::GaloshesDnsRecord.new('new_subdomain')
-      record.zone(existing_zone_resource)
+      record.zone(existing_zone)
       record.type('A')
       record.ttl(60)
       record.value(['10.0.0.1'])
@@ -38,7 +38,7 @@ describe Chef::Provider::GaloshesDnsRecord do
   context 'when resource does exist' do
     let(:resource) do
       record = Chef::Resource::GaloshesDnsRecord.new('existing_subdomain')
-      record.zone(existing_zone_resource)
+      record.zone(existing_zone)
       record.type('A')
       record.ttl(60)
       record.value(['10.0.0.1'])

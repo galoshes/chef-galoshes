@@ -6,7 +6,7 @@ describe Chef::Provider::GaloshesSecurityGroup do
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
-    existing_security_group_resource_a
+    existing_security_group_a
     provider.new_resource = resource
     provider.load_current_resource
   end

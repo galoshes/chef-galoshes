@@ -7,7 +7,7 @@ describe Chef::Provider::GaloshesDnsZone do
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
-    existing_zone_resource
+    existing_zone
     provider.new_resource = resource
     provider.load_current_resource
   end
@@ -30,11 +30,7 @@ describe Chef::Provider::GaloshesDnsZone do
   end
 
   context 'when domain does exist' do
-    before do
-      existing_zone_resource
-    end
     let(:resource) { Chef::Resource::GaloshesDnsZone.new('existing.fake.domain.com.') }
-
 
     describe '#load_current_resource' do
       it 'is populated' do

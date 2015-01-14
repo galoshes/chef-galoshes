@@ -11,40 +11,39 @@ shared_context 'common stuff' do
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
-  let(:existing_zone_resource) do
+  let(:existing_zone) do
     resource = Chef::Resource::GaloshesDnsZone.new('existing.fake.domain.com.')
     provider = Chef::Provider::GaloshesDnsZone.new(resource, run_context)
     provider.load_current_resource
     provider.action_create
-    # puts "existing_zone_resource: #{resource.inspect}"
+    # puts "existing_zone: #{resource.inspect}"
     resource
   end
 
-  let(:existing_dns_record_resource) do
+  let(:existing_dns_record) do
     resource = Chef::Resource::GaloshesDnsRecord.new('existing_subdomain')
-    resource.zone(existing_zone_resource)
+    resource.zone(existing_zone)
     resource.type('A')
     resource.ttl(60)
     resource.value(['10.0.0.1'])
     provider = Chef::Provider::GaloshesDnsRecord.new(resource, run_context)
     provider.load_current_resource
     provider.action_create
-    # puts "existing_dns_record_resource: #{resource.inspect}"
+    # puts "existing_dns_record: #{resource.inspect}"
     resource
   end
 
   # defines security groups as follows
-  # :existing_security_group_resource_#{name}
-  # :existing_security_group_provider_#{name}
+  # :existing_security_group_#{name}
   def self.security_group(name)
-    let("existing_security_group_resource_#{name}".to_sym) do
+    let("existing_security_group_#{name}".to_sym) do
       resource = Chef::Resource::GaloshesSecurityGroup.new("existing security group #{name}")
       resource.description("existing security group #{name}")
       resource.ip_permissions([])
       provider = Chef::Provider::GaloshesSecurityGroup.new(resource, run_context)
       provider.load_current_resource
       provider.action_create
-    # puts "existing_sec_group_resource: #{existing_security_group_resource.inspect}"
+      # puts "existing_sec_group: #{existing_security_group.inspect}"
       resource
     end
   end
@@ -52,7 +51,7 @@ shared_context 'common stuff' do
   security_group('b')
   security_group('c')
 
-  let(:existing_load_balancer_resource) do
+  let(:existing_load_balancer) do
     resource = Chef::Resource::GaloshesLoadBalancer.new('existing load balancer')
     resource.security_groups([])
     resource.subnet_ids([])

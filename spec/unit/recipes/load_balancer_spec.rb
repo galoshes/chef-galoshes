@@ -6,7 +6,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
   subject(:provider) { described_class.new(resource, run_context) }
 
   before do
-    existing_load_balancer_resource
+    existing_load_balancer
     provider.new_resource = resource
     provider.load_current_resource
   end
@@ -14,7 +14,7 @@ describe Chef::Provider::GaloshesLoadBalancer do
   context 'when resource does not exist' do
     let(:resource) do
       resource = Chef::Resource::GaloshesLoadBalancer.new('new load balancer')
-      resource.security_groups([existing_security_group_resource_a.group_id])
+      resource.security_groups([existing_security_group_a.group_id])
       resource.subnet_ids([])
       resource
     end
@@ -37,8 +37,8 @@ describe Chef::Provider::GaloshesLoadBalancer do
   context 'when resource does exist' do
     let(:new_security_groups) do
       [
-        existing_security_group_resource_b.group_id,
-        existing_security_group_resource_c.group_id,
+        existing_security_group_b.group_id,
+        existing_security_group_c.group_id,
       ]
     end
     let(:resource) do
