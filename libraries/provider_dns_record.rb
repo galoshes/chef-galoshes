@@ -35,9 +35,9 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
     converge_unless(@exists, "create #{resource_str}") do
       attributes = [:value, :ttl, :type, :alias_target, :region, :zone]
       attributes.each do |attr|
-	value = new_resource.send(attr)
-	Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-	@current_resource.send("#{attr}=", value) unless value.nil?
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource.send("#{attr}=", value) unless value.nil?
       end
       Chef::Log.debug("current_resource before save: #{current_resource}")
       # Chef::Log.debug "curr: #{@current_resource.inspect}"
