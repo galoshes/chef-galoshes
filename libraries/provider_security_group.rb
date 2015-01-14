@@ -1,4 +1,4 @@
-
+require 'pp'
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
@@ -19,7 +19,6 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
     @exists = !(@current_resource.nil?)
     @current_resource.reload if @exists
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
-    Chef::Log.debug(@current_resource.inspect)
     if @exists
       new_resource.group_id(@current_resource.group_id)
     end
@@ -37,15 +36,15 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
           Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
           @current_resource.send("#{attr}=", value) unless value.nil?
         end
-        Chef::Log.debug("current_resource before save: #{current_resource.inspect}")
+        Chef::Log.debug("current_resource before save: #{@current_resource}")
 
         result = @current_resource.save
         Chef::Log.debug("create as result: #{result}")
-        Chef::Log.debug("current_resource after save: #{current_resource.inspect}")
+        Chef::Log.debug("current_resource after save: #{@current_resource}")
         @exists = true
 
         @current_resource.reload
-        Chef::Log.debug("current_resource after reload: #{current_resource.inspect}")
+        Chef::Log.debug("current_resource after reload: #{@current_resource}")
 
         authorize_ip_permissions
 

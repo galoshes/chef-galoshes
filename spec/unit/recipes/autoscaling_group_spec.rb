@@ -13,7 +13,6 @@ describe Chef::Provider::GaloshesAutoscalingGroup do
   end
 
   context 'when resource does not exist' do
-
     describe '#load_current_resource' do
       it 'is empty' do
         expect(provider.exists).to eq(false)

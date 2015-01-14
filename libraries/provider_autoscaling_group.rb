@@ -21,7 +21,6 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     @current_resource.reload
     @exists = !(@current_resource.created_at.nil?)
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
-    Chef::Log.debug(@current_resource.inspect)
     Chef::Log.debug("instances: #{@current_resource.instances}")
     if @exists
       new_resource.instances(@current_resource.instances)

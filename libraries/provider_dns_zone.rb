@@ -16,12 +16,10 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
     @service = Fog::DNS::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key)
     @collection = Fog::DNS::AWS::Zones.new(:service => @service)
     all = @collection.all
-    Chef::Log.debug("all: #{all}")
     @current_resource = all.find { |zone| zone.domain == new_resource.domain }
 
     @exists = !(@current_resource.nil?)
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
-    Chef::Log.debug(@current_resource.inspect)
 
     if @exists
       new_resource.id(@current_resource.id)
