@@ -5,15 +5,17 @@ describe Chef::Provider::GaloshesLaunchConfiguration do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesLaunchConfiguration.new('fake_subdomain') }
-
   before do
     provider.new_resource = resource
+    provider.load_current_resource
   end
 
   context 'when resource does not exist' do
-    before do
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesLaunchConfiguration.new('fake_subdomain')
+      resource.image_id('ami-456')
+      resource.instance_type('m1.small')
+      resource
     end
 
     describe '#load_current_resource' do
@@ -24,30 +26,25 @@ describe Chef::Provider::GaloshesLaunchConfiguration do
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq([])
-        # expect(events).not_to eq(nil)
+        expect(provider.action_create).to eq([])
+        expect(events).not_to eq(nil)
       end
     end
   end
 
   context 'when resource does exist' do
-    before do
-      # @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
-      # @service.zones.create(:domain => 'fake.domain.com.')
-      # log.debug("service.zones: #{@service.zones}")
-      provider.load_current_resource
-    end
+    let(:resource) { Chef::Resource::GaloshesLaunchConfiguration.new('existing launch configuration') }
 
     describe '#load_current_resource' do
       it 'is populated' do
-        # expect(provider.exists).to eq(true)
-        # expect(provider.current_resource).not_to eq(nil)
+        expect(provider.exists).to eq(true)
+        expect(provider.current_resource).not_to eq(nil)
       end
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq(nil)
-        # expect(events).not_to eq(nil)
+        expect(provider.action_create).to eq(nil)
+        expect(events).not_to eq(nil)
       end
     end
   end

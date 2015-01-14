@@ -61,6 +61,16 @@ shared_context 'common stuff' do
     resource
   end
 
+  let(:existing_launch_configuration) do
+    resource = Chef::Resource::GaloshesLaunchConfiguration.new('existing launch configuration')
+    resource.image_id('ami-123')
+    resource.instance_type('m3.large')
+    provider = Chef::Provider::GaloshesLaunchConfiguration.new(resource, run_context)
+    provider.load_current_resource
+    provider.action_create
+    resource
+  end
+
   before do
     Fog.mock!
     Fog::Mock.reset
@@ -70,5 +80,6 @@ shared_context 'common stuff' do
     existing_security_group_b
     existing_security_group_c
     existing_load_balancer
+    existing_launch_configuration
   end
 end
