@@ -9,8 +9,9 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
     aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
     region = new_resource.region || node['galoshes']['region']
 
-    @fog_as = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @current_resource = @fog_as.servers.all(new_resource.filter_by => new_resource.name).first
+    @service = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    @collection = @service.servers
+    @current_resource = @collection.all(new_resource.filter_by => new_resource.name).first
 
     @exists = !(@current_resource.nil?)
     Chef::Log.info("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
@@ -18,11 +19,27 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
 
     if @exists
       new_resource.private_ip_address(@current_resource.private_ip_address)
+    else
+      @current_resource = @collection.new
     end
     @current_resource
   end
 
   def action_create
+    converge_unless(@exists, "create #{resource_str}") do
+      create_attributes = [:groups, :security_group_ids]
+      create_attributes.each do |attr|
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource.send("#{attr}=", value) unless value.nil?
+      end
+      Chef::Log.debug("current_resource before save: #{current_resource}")
+
+      result = @current_resource.save
+      Chef::Log.debug("create as result: #{result}")
+      @exists = true
+      new_resource.updated_by_last_action(true)
+    end
   end
 
   def action_delete
@@ -61,7 +78,7 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
       Chef::Log.info("security_groups cur: #{cur_groups}")
       Chef::Log.info("security_groups new: #{new_groups}")
       converge_if(!(new_groups.nil?) && cur_groups != new_groups, "update security groups from #{cur_groups} to #{new_groups}") do
-        result = @fog_as.modify_instance_attribute(@current_resource.id, 'GroupId' => new_groups)
+        result = @service.modify_instance_attribute(@current_resource.id, 'GroupId' => new_groups)
         Chef::Log.info("result: #{result.status}")
         new_resource.updated_by_last_action(true)
       end

@@ -102,6 +102,14 @@ shared_context 'common stuff' do
     resource
   end
 
+  let(:existing_server) do
+    resource = Chef::Resource::GaloshesServer.new('existing_server')
+    provider = Chef::Provider::GaloshesServer.new(resource, run_context)
+    provider.load_current_resource
+    provider.action_create
+    resource
+  end
+
   before do
     Fog.mock!
     Fog::Mock.reset
@@ -115,5 +123,6 @@ shared_context 'common stuff' do
     existing_dhcp_options
     existing_vpc
     existing_subnet
+    existing_server
   end
 end

@@ -5,37 +5,35 @@ describe Chef::Provider::GaloshesServer do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesServer.new('fake_subdomain') }
-
   before do
     provider.new_resource = resource
+    provider.load_current_resource
   end
 
   context 'when resource does not exist' do
-    before do
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesServer.new('fake_subdomain')
+      resource
     end
 
     describe '#load_current_resource' do
       it 'is empty' do
         expect(provider.exists).to eq(false)
-        expect(provider.current_resource).to eq(nil)
+        expect(provider.current_resource.id).to eq(nil)
       end
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq([])
-        # expect(events).not_to eq(nil)
+        provider.action_create
+        expect(provider.exists).to eq(true)
       end
     end
   end
 
   context 'when resource does exist' do
-    before do
-      # @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
-      # @service.zones.create(:domain => 'fake.domain.com.')
-      # log.debug("service.zones: #{@service.zones}")
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesServer.new('existing_server')
+      resource
     end
 
     describe '#load_current_resource' do
@@ -46,8 +44,12 @@ describe Chef::Provider::GaloshesServer do
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq(nil)
-        # expect(events).not_to eq(nil)
+        provider.action_create
+      end
+    end
+    describe '#action_update' do
+      it 'is created' do
+        provider.action_update
       end
     end
   end
