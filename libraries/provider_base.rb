@@ -5,11 +5,11 @@ class Chef
       attr_reader :exists
 
       def copy_attributes(attributes, source = new_resource, dest = @current_resource)
-	attributes.each do |attr|
-	  value = source.send(attr)
-	  Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-	  dest.send("#{attr}=", value) unless value.nil?
-	end
+        attributes.each do |attr|
+          value = source.send(attr)
+          Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+          dest.send("#{attr}=", value) unless value.nil?
+        end
       end
 
       def con

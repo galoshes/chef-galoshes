@@ -1,16 +1,5 @@
 
 class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
-  def load_attributes
-    result = con.describe_vpc_attribute(@current_resource.id, 'enableDnsSupport')
-    if result.status == 200
-      @current_resource.enable_dns_support(result.body['enableDnsSupport'])
-    end
-    result = con.describe_vpc_attribute(@current_resource.id, 'enableDnsHostnames')
-    if result.status == 200
-      @current_resource.enable_dns_hostnames(result.body['enableDnsHostnames'])
-    end
-  end
-
   def load_current_resource
     aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
     aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
@@ -21,7 +10,7 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
     vpcs = @collection.all('tag:Name' => new_resource.name)
     @current_resource = @collection.new(:id => new_resource.name, :service => @service)
     @current_resource.reload
-    Chef::Log.warn("vpcs: #{vpcs.to_json}")
+    Chef::Log.debug("vpcs: #{vpcs.to_json}")
     if vpcs.size != 1
       Chef::Log.info("Couldn't find vpc[#{new_resource.name}]. Found #{vpcs.size}")
       @exists = false
@@ -29,9 +18,8 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
       Chef::Log.info("Found vpc[#{new_resource.name}]. Setting attributes.")
       @exists = true
       @current_resource = vpcs[0]
-      load_attributes
     end
-    Chef::Log.warn("load_current_resource @current_resource: #{@current_resource.to_json}")
+    Chef::Log.debug("load_current_resource @current_resource: #{@current_resource.to_json}")
 
     new_resource.tags['Name'] = new_resource.name
   end
