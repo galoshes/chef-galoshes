@@ -74,6 +74,15 @@ shared_context 'common stuff' do
     resource
   end
 
+  let(:existing_dhcp_options) do
+    resource = Chef::Resource::GaloshesDhcpOptions.new('existing dhcp options')
+
+    provider = Chef::Provider::GaloshesDhcpOptions.new(resource, run_context)
+    provider.load_current_resource
+    provider.action_create
+    resource
+  end
+
   before do
     Fog.mock!
     Fog::Mock.reset
@@ -84,5 +93,6 @@ shared_context 'common stuff' do
     existing_security_group_c
     existing_load_balancer
     existing_launch_configuration
+    existing_dhcp_options
   end
 end

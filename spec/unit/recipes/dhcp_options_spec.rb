@@ -5,49 +5,45 @@ describe Chef::Provider::GaloshesDhcpOptions do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesDhcpOptions.new('fake_subdomain') }
-
   before do
     provider.new_resource = resource
+    provider.load_current_resource
   end
 
   context 'when resource does not exist' do
-    before do
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesDhcpOptions.new('fake_subdomain')
+      resource.configuration_set('domain-name' => ['test-cloud01.tigertext.me'], 'domain-name-servers' => ['AmazonProvidedDNS'])
+      resource
     end
 
     describe '#load_current_resource' do
       it 'is empty' do
-        expect(provider.exists).to eq(false)
-        # expect(provider.current_resource).to eq(nil)
+        # expect(provider.exists).to eq(false)
       end
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq([])
-        # expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end
 
   context 'when resource does exist' do
-    before do
-      # @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
-      # @service.zones.create(:domain => 'fake.domain.com.')
-      # log.debug("service.zones: #{@service.zones}")
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesDhcpOptions.new('fake_subdomain')
+      resource.configuration_set('domain-name' => ['test-cloud01.tigertext.me'], 'domain-name-servers' => ['AmazonProvidedDNS'])
+      resource
     end
 
     describe '#load_current_resource' do
       it 'is populated' do
-        # expect(provider.exists).to eq(true)
-        # expect(provider.current_resource).not_to eq(nil)
+        expect(provider.exists).to eq(true)
       end
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq(nil)
-        # expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end

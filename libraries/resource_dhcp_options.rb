@@ -7,7 +7,7 @@ class Chef::Resource::GaloshesDhcpOptions < Chef::Resource::LWRPBase
   default_action :create
 
   attribute :id, :kind_of => [String, NilClass], :default => nil
-  attribute :configuration_set, :kind_of => [Hash]
+  attribute :configuration_set, :kind_of => [Hash], :default => {}
   attribute :tags, :kind_of => Hash, :default => {}
 
   attribute :aws_access_key_id, :default => nil

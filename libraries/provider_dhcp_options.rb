@@ -22,35 +22,29 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
       @exists = true
     end
 
-    new_resource.tags['Name'] = new_resource.name
+    # new_resource.tags['Name'] = new_resource.name
 
     @current_resource
   end
 
   def action_create
-    Chef::Log.debug("new_resource: #{new_resource}")
-
-    if @current_resource.id.nil?
-      converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
-        result = con.create_dhcp_options(new_resource.configuration_set)
-        if verify_result(result, 'create_dhcp_options')
-          body_set = result.body['dhcpOptionsSet']
-          if body_set.size != 1
-            Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
-          else
-            @current_resource.id(body_set[0]['dhcpOptionsId'])
-            @current_resource.configuration_set(body_set[0]['configurationSet'])
-            @current_resource.tags(body_set[0]['tagSet'])
-          end
-          Chef::Log.info("id: #{@current_resource.id}")
+    converge_unless(@exists, "create #{resource_str}") do
+      result = @service.create_dhcp_options(new_resource.configuration_set)
+      if verify_result(result, 'create_dhcp_options')
+        body_set = result.body['dhcpOptionsSet']
+        if body_set.size != 1
+          Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
+        else
+          @current_resource.id(body_set[0]['dhcpOptionsId'])
+          @current_resource.configuration_set(body_set[0]['configurationSet'])
+          @current_resource.tags(body_set[0]['tagSet'])
         end
+        Chef::Log.info("id: #{@current_resource.id}")
       end
-    else
-      Chef::Log.info('current_resource exists')
     end
 
     verify_attribute(:tags) do
-      con.create_tags(@current_resource.id, new_resource.tags)
+      @service.create_tags(@current_resource.id, new_resource.tags)
     end
   end
 end
