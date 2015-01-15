@@ -31,11 +31,8 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
 
   def action_create
     converge_unless(@exists, "create #{resource_str}") do
-      @collection.model.attributes.each do |attr|
-        value = new_resource.send(attr)
-        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-        @current_resource.send("#{attr}=", value) unless value.nil?
-      end
+      create_attributes = @collection.model.attributes
+      copy_attributes(create_attributes)
       Chef::Log.debug("current_resource before save: #{current_resource}")
 
       result = @current_resource.save

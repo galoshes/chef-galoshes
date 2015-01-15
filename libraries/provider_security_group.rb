@@ -1,4 +1,3 @@
-require 'pp'
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
