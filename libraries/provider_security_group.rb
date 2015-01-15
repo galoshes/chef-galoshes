@@ -74,16 +74,19 @@ class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
     Chef::Log.info("new_ip: #{new_ip_permissions}")
     Chef::Log.info("cur_ip: #{cur_ip_permissions}")
 
-    cur_ip_permissions.each do |cur_permission|
-      converge_if(!(new_ip_permissions.include?(cur_permission)), "remove #{cur_permission}") do
-        @current_resource.revoke_port_range(cur_permission[:range], cur_permission)
+    remove_permissions = cur_ip_permissions - new_ip_permissions
+    authorize_permissions = new_ip_permissions - cur_ip_permissions
+
+    remove_permissions.each do |permission|
+      converge_by("remove #{permission}") do
+        @current_resource.revoke_port_range(permission[:range], permission)
         new_resource.updated_by_last_action(true)
       end
     end
 
-    new_ip_permissions.each do |new_permission|
-      converge_if(!(cur_ip_permissions.include?(new_permission)), "add #{new_permission}") do
-        @current_resource.authorize_port_range(new_permission[:range], new_permission)
+    authorize_permissions.each do |permission|
+      converge_by("add #{permission}") do
+        @current_resource.authorize_port_range(permission[:range], permission)
         new_resource.updated_by_last_action(true)
       end
     end
