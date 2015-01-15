@@ -20,9 +20,11 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'libraries'))
 require 'shared_stuff'
 
 require 'mixin_delete'
+
 require 'service_auto_scaling'
 require 'service_compute'
 require 'service_dns'
+require 'service_elb'
 
 require 'provider_base'
 

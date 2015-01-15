@@ -5,7 +5,7 @@ class Chef
       attr_reader :exists
 
       def aws_access_key_id
-	new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
+        new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
       end
 
       def aws_secret_access_key

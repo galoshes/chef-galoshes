@@ -4,11 +4,14 @@
 
 class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
+  include Galoshes::ElbService
 
   def load_current_resource
-    @service = Fog::AWS::ELB.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::AWS::ELB::LoadBalancers.new(:service => @service)
-    @current_resource = @collection.new(:id => new_resource.name, :service => @service)
+    require 'fog'
+    require 'fog/aws/models/elb/load_balancers'
+
+    @collection = Fog::AWS::ELB::LoadBalancers.new(:service => service)
+    @current_resource = @collection.new(:id => new_resource.name, :service => service)
     Chef::Log.debug "curr: #{@current_resource}"
     @current_resource.reload
     Chef::Log.debug "curr.reload: #{@current_resource}"
@@ -39,17 +42,17 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   def action_update
     verify_attribute(:security_groups) do
       @current_resource.security_groups = new_resource.security_groups
-      @service.apply_security_groups(new_resource.security_groups, @current_resource.id)
+      service.apply_security_groups(new_resource.security_groups, @current_resource.id)
     end
 
     verify_attribute(:subnet_ids) do
       @current_resource.subnet_ids = new_resource.subnet_ids
-      @service.enable_subnets(new_resource.subnet_ids, @current_resource.id)
+      service.enable_subnets(new_resource.subnet_ids, @current_resource.id)
     end
 
     verify_attribute(:health_check) do
       @current_resource.health_check = new_resource.health_check
-      @service.configure_health_check(new_resource.name, @current_resource.health_check)
+      service.configure_health_check(new_resource.name, @current_resource.health_check)
     end
   end
 end
