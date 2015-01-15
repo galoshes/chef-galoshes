@@ -1,10 +1,6 @@
 
 class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
   def load_current_resource
-    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
-    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
-    region = new_resource.region || node['galoshes']['region']
-
     @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::Compute::AWS::Vpcs.new(:service => @service)
     vpcs = @collection.all('tag:Name' => new_resource.name)

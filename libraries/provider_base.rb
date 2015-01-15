@@ -4,6 +4,18 @@ class Chef
     class GaloshesBase < Chef::Provider
       attr_reader :exists
 
+      def aws_access_key_id
+	new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
+      end
+
+      def aws_secret_access_key
+        new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
+      end
+
+      def region
+        new_resource.region || node['galoshes']['region']
+      end
+
       def copy_attributes(attributes, source = new_resource, dest = @current_resource)
         attributes.each do |attr|
           value = source.send(attr)

@@ -2,10 +2,6 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesDhcpOptions.new(new_resource.name)
 
-    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
-    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
-    region = new_resource.region || node['galoshes']['region']
-
     @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::Compute::AWS::DhcpOptions.new(:service => @service)
     dhcp_options = @collection.all('tag:Name' => new_resource.name)

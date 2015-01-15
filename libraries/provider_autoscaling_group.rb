@@ -10,10 +10,6 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     require 'fog'
     require 'fog/aws/models/auto_scaling/groups'
 
-    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
-    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
-    region = new_resource.region || node['galoshes']['region']
-
     @fog_as = Fog::AWS::AutoScaling.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::AWS::AutoScaling::Groups.new(:service => @fog_as)
     @current_resource = @collection.new(:id => new_resource.name, :service => @fog_as)

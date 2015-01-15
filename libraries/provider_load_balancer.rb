@@ -6,9 +6,7 @@ class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
 
   def load_current_resource
-    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
-    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
-    @service = Fog::AWS::ELB.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => new_resource.region)
+    @service = Fog::AWS::ELB.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = Fog::AWS::ELB::LoadBalancers.new(:service => @service)
     @current_resource = @collection.new(:id => new_resource.name, :service => @service)
     Chef::Log.debug "curr: #{@current_resource}"

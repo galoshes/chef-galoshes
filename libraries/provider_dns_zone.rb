@@ -10,9 +10,6 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
     require 'fog'
     require 'fog/aws/models/dns/zones'
 
-    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
-    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
-
     @service = Fog::DNS::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key)
     @collection = Fog::DNS::AWS::Zones.new(:service => @service)
     all = @collection.all

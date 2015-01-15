@@ -5,10 +5,6 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
   def load_current_resource
     require 'fog'
 
-    aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
-    aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
-    region = new_resource.region || node['galoshes']['region']
-
     @service = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
     @collection = @service.servers
     @current_resource = @collection.all(new_resource.filter_by => new_resource.name).first
