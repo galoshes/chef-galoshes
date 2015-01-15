@@ -1,10 +1,10 @@
-
 class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
+  include Galoshes::ComputeService
+
   def load_current_resource
-    @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::Compute::AWS::Vpcs.new(:service => @service)
+    @collection = Fog::Compute::AWS::Vpcs.new(:service => service)
     vpcs = @collection.all('tag:Name' => new_resource.name)
-    @current_resource = @collection.new(:id => new_resource.name, :service => @service)
+    @current_resource = @collection.new(:id => new_resource.name, :service => service)
     @current_resource.reload
     Chef::Log.debug("vpcs: #{vpcs.to_json}")
     if vpcs.size != 1

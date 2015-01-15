@@ -1,8 +1,8 @@
-
 class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
+  include Galoshes::ComputeService
+
   def load_current_resource
-    @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::Compute::AWS::Subnets.new(:service => @service)
+    @collection = Fog::Compute::AWS::Subnets.new(:service => service)
 
     Chef::Log.info("vpc_id: #{new_resource.vpc_id}")
 
@@ -37,7 +37,7 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
       Chef::Log.debug("create as result: #{result} after save #{current_resource}")
     end
     verify_attribute(:tag_set) do
-      @service.create_tags(@current_resource.subnet_id, new_resource.tag_set) unless Fog.mocking?
+      service.create_tags(@current_resource.subnet_id, new_resource.tag_set) unless Fog.mocking?
     end
   end
 end

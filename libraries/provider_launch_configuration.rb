@@ -1,6 +1,8 @@
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
+  include Galoshes::AutoscalingService
+
   def clarify_attributes
     # @current_resource.placement_tenancy ||= 'default'
   end
@@ -9,9 +11,8 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
     require 'fog'
     require 'fog/aws/models/auto_scaling/configurations'
 
-    @fog_as = Fog::AWS::AutoScaling.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::AWS::AutoScaling::Configurations.new(:service => @fog_as)
-    @current_resource = @collection.new(:id => new_resource.name, :service => @fog_as)
+    @collection = Fog::AWS::AutoScaling::Configurations.new(:service => service)
+    @current_resource = @collection.new(:id => new_resource.name, :service => service)
 
     @current_resource.reload
     clarify_attributes

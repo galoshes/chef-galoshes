@@ -1,15 +1,15 @@
-
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
-  attr_reader :service, :collection
+  include Galoshes::DnsService
+
+  attr_reader :collection
 
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/dns/records'
 
-    @service = Fog::DNS::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key)
-    @collection = Fog::DNS::AWS::Records.new(:service => @service)
+    @collection = Fog::DNS::AWS::Records.new(:service => service)
     @zone = new_resource.zone
     Chef::Log.debug("zone: #{@zone.inspect}")
     @collection.zone = @zone
@@ -19,7 +19,7 @@ class Chef::Provider::GaloshesDnsRecord < Chef::Provider::GaloshesBase
     end
 
     @fqdn = "#{new_resource.name}.#{@zone.domain}"
-    @current_resource = @collection.new(:name => @fqdn, :service => @service)
+    @current_resource = @collection.new(:name => @fqdn, :service => service)
     @current_resource.reload
     Chef::Log.debug "current_resource after reload: #{@current_resource}"
     @exists = !(@current_resource.type.nil?)

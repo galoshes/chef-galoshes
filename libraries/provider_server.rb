@@ -1,12 +1,12 @@
-
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
+  include Galoshes::ComputeService
+
   def load_current_resource
     require 'fog'
 
-    @service = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = @service.servers
+    @collection = service.servers
     @current_resource = @collection.all(new_resource.filter_by => new_resource.name).first
 
     @exists = !(@current_resource.nil?)
@@ -70,7 +70,7 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
       Chef::Log.info("security_groups cur: #{cur_groups}")
       Chef::Log.info("security_groups new: #{new_groups}")
       converge_if(!(new_groups.nil?) && cur_groups != new_groups, "update security groups from #{cur_groups} to #{new_groups}") do
-        result = @service.modify_instance_attribute(@current_resource.id, 'GroupId' => new_groups)
+        result = service.modify_instance_attribute(@current_resource.id, 'GroupId' => new_groups)
         Chef::Log.info("result: #{result.status}")
         new_resource.updated_by_last_action(true)
       end

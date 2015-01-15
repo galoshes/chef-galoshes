@@ -1,17 +1,16 @@
-
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
+  include Galoshes::DnsService
 
-  attr_reader :service, :collection
+  attr_reader :collection
 
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/dns/zones'
 
-    @service = Fog::DNS::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key)
-    @collection = Fog::DNS::AWS::Zones.new(:service => @service)
+    @collection = Fog::DNS::AWS::Zones.new(:service => service)
     all = @collection.all
     @current_resource = all.find { |zone| zone.domain == new_resource.domain }
 
@@ -27,7 +26,7 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
 
   def action_create
     converge_unless(@exists, "create #{resource_str}") do
-      @current_resource = Fog::DNS::AWS::Zone.new(:service => @service)
+      @current_resource = Fog::DNS::AWS::Zone.new(:service => service)
       create_attributes = [:domain, :description, :nameservers]
       copy_attributes(create_attributes)
       Chef::Log.debug("current_resource before save: #{current_resource}")

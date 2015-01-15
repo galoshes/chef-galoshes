@@ -20,6 +20,10 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'libraries'))
 require 'shared_stuff'
 
 require 'mixin_delete'
+require 'service_auto_scaling'
+require 'service_compute'
+require 'service_dns'
+
 require 'provider_base'
 
 %w(autoscaling_group dns_zone dns_record dhcp_options launch_configuration load_balancer security_group server subnet vpc).each do |thing|

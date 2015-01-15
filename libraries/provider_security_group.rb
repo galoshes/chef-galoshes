@@ -2,13 +2,13 @@ require_relative 'provider_base'
 
 class Chef::Provider::GaloshesSecurityGroup < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
+  include Galoshes::ComputeService
 
   def load_current_resource
     require 'fog'
     require 'fog/aws/models/compute/security_groups'
 
-    @fog_as = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::Compute::AWS::SecurityGroups.new(:service => @fog_as)
+    @collection = Fog::Compute::AWS::SecurityGroups.new(:service => service)
     @current_resource = @collection.get(new_resource.name)
 
     @exists = !(@current_resource.nil?)

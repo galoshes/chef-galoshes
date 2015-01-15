@@ -1,8 +1,8 @@
-
 require_relative 'provider_base'
 
 class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
+  include Galoshes::AutoscalingService
 
   attr_reader :collection
 
@@ -10,9 +10,8 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     require 'fog'
     require 'fog/aws/models/auto_scaling/groups'
 
-    @fog_as = Fog::AWS::AutoScaling.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::AWS::AutoScaling::Groups.new(:service => @fog_as)
-    @current_resource = @collection.new(:id => new_resource.name, :service => @fog_as)
+    @collection = Fog::AWS::AutoScaling::Groups.new(:service => service)
+    @current_resource = @collection.new(:id => new_resource.name, :service => service)
 
     @current_resource.reload
     @exists = !(@current_resource.created_at.nil?)
@@ -62,7 +61,7 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
       Chef::Log.debug("tags cur: #{@current_resource.tags}")
       Chef::Log.debug("tags new: #{new_tags}")
       converge_if(new_tags != @current_resource.tags, "updating #{resource_str}.tags") do
-        @fog_as.create_or_update_tags(new_tags)
+        service.create_or_update_tags(new_tags)
         new_resource.updated_by_last_action(true)
       end
 

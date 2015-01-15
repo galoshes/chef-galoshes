@@ -1,9 +1,10 @@
 class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
+  include Galoshes::ComputeService
+
   def load_current_resource
     @current_resource ||= Chef::Resource::GaloshesDhcpOptions.new(new_resource.name)
 
-    @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    @collection = Fog::Compute::AWS::DhcpOptions.new(:service => @service)
+    @collection = Fog::Compute::AWS::DhcpOptions.new(:service => service)
     dhcp_options = @collection.all('tag:Name' => new_resource.name)
 
     Chef::Log.debug("current: #{dhcp_options.inspect}")
@@ -25,7 +26,7 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
 
   def action_create
     converge_unless(@exists, "create #{resource_str}") do
-      result = @service.create_dhcp_options(new_resource.configuration_set)
+      result = service.create_dhcp_options(new_resource.configuration_set)
       if verify_result(result, 'create_dhcp_options')
         body_set = result.body['dhcpOptionsSet']
         if body_set.size != 1
@@ -40,7 +41,7 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
     end
 
     verify_attribute(:tags) do
-      @service.create_tags(@current_resource.id, new_resource.tags)
+      service.create_tags(@current_resource.id, new_resource.tags)
     end
   end
 end
