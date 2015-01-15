@@ -5,15 +5,17 @@ describe Chef::Provider::GaloshesVpc do
   include_context 'common stuff'
   subject(:provider) { described_class.new(resource, run_context) }
 
-  let(:resource) { Chef::Resource::GaloshesVpc.new('fake_subdomain') }
-
   before do
     provider.new_resource = resource
+    provider.load_current_resource
   end
 
   context 'when resource does not exist' do
-    before do
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesVpc.new('fake_subdomain')
+      resource.dhcp_options_id(existing_dhcp_options.id)
+      resource.cidr_block('10.0.0.0/16')
+      resource
     end
 
     describe '#load_current_resource' do
@@ -24,30 +26,28 @@ describe Chef::Provider::GaloshesVpc do
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq([])
-        # expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end
 
   context 'when resource does exist' do
-    before do
-      # @service = Fog::DNS.new(:provider => 'AWS', :aws_access_key_id => 'fake_access_key', :aws_secret_access_key => 'fake_secret_key')
-      # @service.zones.create(:domain => 'fake.domain.com.')
-      # log.debug("service.zones: #{@service.zones}")
-      provider.load_current_resource
+    let(:resource) do
+      resource = Chef::Resource::GaloshesVpc.new('existing vpc')
+      resource.dhcp_options_id(existing_dhcp_options.id)
+      resource.cidr_block('10.1.1.1/24')
+      resource
     end
 
     describe '#load_current_resource' do
       it 'is populated' do
         # expect(provider.exists).to eq(true)
-        # expect(provider.current_resource).not_to eq(nil)
+        expect(provider.current_resource).not_to eq(nil)
       end
     end
     describe '#action_create' do
       it 'is created' do
-        # expect(provider.action_create).to eq(nil)
-        # expect(events).not_to eq(nil)
+        provider.action_create
       end
     end
   end

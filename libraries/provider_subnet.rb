@@ -45,22 +45,18 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
   def action_create
     Chef::Log.debug("new_resource: #{new_resource}")
 
-    if @current_resource.id.nil?
-      converge_by("Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
-        options = {}
-        options['AvailabilityZone'] = new_resource.availability_zone unless new_resource.availability_zone.nil?
-        result = con.create_subnet(new_resource.vpc_id, new_resource.cidr_block, options)
-        if verify_result(result, "create_subnet(#{new_resource.vpc_id}, #{new_resource.cidr_block}, #{options}")
-          subnet = result.body['subnet']
-          @current_resource.id(subnet['subnetId'])
-          @current_resource.vpc_id(subnet['vpcId'])
-          @current_resource.cidr_block(subnet['cidrBlock'])
-          @current_resource.availability_zone(subnet['availabilityZone'])
-          @current_resource.tags(subnet['tagSet'])
-        end
+    converge_unless(@exists, "create #{resource_str}") do
+      options = {}
+      options['AvailabilityZone'] = new_resource.availability_zone unless new_resource.availability_zone.nil?
+      result = con.create_subnet(new_resource.vpc_id, new_resource.cidr_block, options)
+      if verify_result(result, "create_subnet(#{new_resource.vpc_id}, #{new_resource.cidr_block}, #{options}")
+        subnet = result.body['subnet']
+        @current_resource.id(subnet['subnetId'])
+        @current_resource.vpc_id(subnet['vpcId'])
+        @current_resource.cidr_block(subnet['cidrBlock'])
+        @current_resource.availability_zone(subnet['availabilityZone'])
+        @current_resource.tags(subnet['tagSet'])
       end
-    else
-      Chef::Log.info('current_resource exists')
     end
 
     verify_attribute(:tags) do

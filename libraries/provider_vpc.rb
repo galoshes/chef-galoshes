@@ -18,8 +18,11 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
     aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
     region = new_resource.region || node['galoshes']['region']
 
-    @fog_as = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
-    vpcs = @fog_as.vpcs.all('tag:Name' => new_resource.name)
+    @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    vpcs = @service.vpcs.all('tag:Name' => new_resource.name)
+    @collection = Fog::Compute::AWS::Vpcs.new(:service => @service)
+    @current_resource_vpc = @collection.new(:id => new_resource.name, :service => @service)
+    @current_resource_vpc.reload
     Chef::Log.debug("current: #{vpcs.inspect}")
     if vpcs.size != 1
       Chef::Log.info("Couldn't find vpc[#{new_resource.name}]. Found #{vpcs.size}")
@@ -36,20 +39,6 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
       load_attributes
     end
 
-    if new_resource.dhcp_options_id.nil?
-      Chef::Log.debug('loading dhcp_options_id from dhcp_options attribute')
-
-      dhcp_options = @fog_as.dhcp_options.all('tag:Name' => new_resource.dhcp_options)
-      Chef::Log.debug("dhcp_options: #{dhcp_options.inspect}")
-      if dhcp_options.size != 1
-        Chef::Log.info("Couldn't find dhcp_option[#{new_resource.dhcp_options}]. Found #{dhcp_options.size}")
-      else
-        Chef::Log.info("Found dhcp_option[#{new_resource.dhcp_options}]. Setting attributes.")
-        new_resource.dhcp_options_id(dhcp_options[0].id)
-      end
-    end
-    Chef::Log.info("dhcp_options_id: #{new_resource.dhcp_options_id}")
-
     new_resource.tags['Name'] = new_resource.name
 
     @current_resource
@@ -59,21 +48,15 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
     Chef::Log.debug("new_resource: #{new_resource}")
 
     converge_if(@current_resource.id.nil?, "Create #{new_resource.resource_name}[#{new_resource.name}] from scratch") do
-      result = con.create_vpc(new_resource.cidr_block, 'InstanceTenancy' => new_resource.tenancy)
-      if verify_result(result, "create_vpc(#{new_resource.cidr_block}) #{new_resource.name}")
-        body_set = result.body['vpcSet']
-        if body_set.size != 1
-          Chef::Log.error("For some reason the result body didn't have 1 result Set #{result.body.inspect}")
-        else
-          @current_resource.id(body_set[0]['vpcId'])
-          @current_resource.cidr_block(body_set[0]['cidrBlock'])
-          @current_resource.dhcp_options_id(body_set[0]['dhcpOptionsId'])
-          @current_resource.tenancy(body_set[0]['instanceTenancy'])
-          @current_resource.tags(body_set[0]['tagSet'])
-          load_attributes
-        end
-        Chef::Log.info("id: #{@current_resource.id}")
+      create_attributes = [:cidr_block, :tenancy, :dhcp_options_id]
+      create_attributes.each do |attr|
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource_vpc.send("#{attr}=", value) unless value.nil?
       end
+      Chef::Log.debug("current_resource before save: #{current_resource}")
+      result = @current_resource_vpc.save
+      Chef::Log.debug("create as result: #{result}")
     end
 
     action_update

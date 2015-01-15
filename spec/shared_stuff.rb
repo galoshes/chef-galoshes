@@ -76,8 +76,17 @@ shared_context 'common stuff' do
 
   let(:existing_dhcp_options) do
     resource = Chef::Resource::GaloshesDhcpOptions.new('existing dhcp options')
-
     provider = Chef::Provider::GaloshesDhcpOptions.new(resource, run_context)
+    provider.load_current_resource
+    provider.action_create
+    resource
+  end
+
+  let(:existing_vpc) do
+    resource = Chef::Resource::GaloshesVpc.new('existing vpc')
+    resource.dhcp_options_id(existing_dhcp_options.id)
+    resource.cidr_block('10.0.0.0/16')
+    provider = Chef::Provider::GaloshesVpc.new(resource, run_context)
     provider.load_current_resource
     provider.action_create
     resource
@@ -94,5 +103,6 @@ shared_context 'common stuff' do
     existing_load_balancer
     existing_launch_configuration
     existing_dhcp_options
+    existing_vpc
   end
 end
