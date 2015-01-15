@@ -1,66 +1,51 @@
 
 class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
   def load_current_resource
-    @current_resource ||= Chef::Resource::GaloshesSubnet.new(new_resource.name)
-
     aws_access_key_id = new_resource.aws_access_key_id || node['galoshes']['aws_access_key_id']
     aws_secret_access_key = new_resource.aws_secret_access_key || node['galoshes']['aws_secret_access_key']
     region = new_resource.region || node['galoshes']['region']
 
-    @fog_as = Fog::Compute.new(:provider => 'AWS', :aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    @service = Fog::Compute::AWS.new(:aws_access_key_id => aws_access_key_id, :aws_secret_access_key => aws_secret_access_key, :region => region)
+    @collection = Fog::Compute::AWS::Subnets.new(:service => @service)
 
-    if new_resource.vpc_id.nil?
-      Chef::Log.debug('loading vpc_id from vpc')
-      vpcs = @fog_as.vpcs.all('tag:Name' => new_resource.vpc)
-      Chef::Log.debug("vpcs: #{vpcs.inspect}")
-      if vpcs.size != 1
-        Chef::Log.info("Couldn't find vpc[#{new_resource.vpc}]. Found #{vpcs.size}")
-      else
-        Chef::Log.info("Found vpc[#{new_resource.vpc}]. Setting attributes.")
-        new_resource.vpc_id(vpcs[0].id)
-      end
-    end
     Chef::Log.info("vpc_id: #{new_resource.vpc_id}")
 
-    subnets = @fog_as.subnets.all('tag:Name' => new_resource.name, 'vpc-id' => new_resource.vpc_id)
-    Chef::Log.debug("current: #{subnets.inspect}")
-    if subnets.size != 1
-      Chef::Log.info("Couldn't find subnet[#{new_resource.name}]. Found #{subnets.size}")
-      @exists = false
+    if new_resource.subnet_id
+      @current_resource = @collection.get(new_resource.subnet_id)
+      @exists = !(@current_resource.nil?)
     else
-      Chef::Log.info("Found subnet[#{new_resource.name}]. Setting attributes.")
-      @exists = true
-      @current_resource.id(subnets[0].subnet_id)
-      @current_resource.vpc_id(subnets[0].vpc_id)
-      @current_resource.cidr_block(subnets[0].cidr_block)
-      @current_resource.availability_zone(subnets[0].availability_zone)
-      @current_resource.tags(subnets[0].tag_set)
+      subnets = @collection.all('tag:Name' => new_resource.name, 'vpc-id' => new_resource.vpc_id)
+
+      if subnets.size == 1
+        Chef::Log.debug("Found #{resource_str}.")
+        @current_resource = subnets[0]
+        @exists = true
+        Chef::Log.debug("Found cur: #{@current_resource.to_json}")
+      else
+        Chef::Log.debug("Couldn't find #{resource_str}. Found #{subnets.size}")
+        @exists = false
+      end
     end
-
-    new_resource.tags['Name'] = new_resource.name
-
-    @current_resource
+    @current_resource = @collection.new unless @exists
   end
 
   def action_create
     Chef::Log.debug("new_resource: #{new_resource}")
 
     converge_unless(@exists, "create #{resource_str}") do
-      options = {}
-      options['AvailabilityZone'] = new_resource.availability_zone unless new_resource.availability_zone.nil?
-      result = con.create_subnet(new_resource.vpc_id, new_resource.cidr_block, options)
-      if verify_result(result, "create_subnet(#{new_resource.vpc_id}, #{new_resource.cidr_block}, #{options}")
-        subnet = result.body['subnet']
-        @current_resource.id(subnet['subnetId'])
-        @current_resource.vpc_id(subnet['vpcId'])
-        @current_resource.cidr_block(subnet['cidrBlock'])
-        @current_resource.availability_zone(subnet['availabilityZone'])
-        @current_resource.tags(subnet['tagSet'])
+      create_attributes = [:cidr_block, :availability_zone, :vpc_id, :tag_set]
+      create_attributes.each do |attr|
+        value = new_resource.send(attr)
+        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
+        @current_resource.send("#{attr}=", value) unless value.nil?
       end
+      Chef::Log.debug("current_resource before save: #{current_resource}")
+      result = @current_resource.save
+      @current_resource.reload
+      Chef::Log.debug("create as result: #{result} after save #{current_resource}")
     end
-
-    verify_attribute(:tags) do
-      con.create_tags(@current_resource.id, new_resource.tags)
+    verify_attribute(:tag_set) do
+      @service.create_tags(@current_resource.subnet_id, new_resource.tag_set) unless Fog.mocking?
     end
   end
 end

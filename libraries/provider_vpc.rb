@@ -57,6 +57,8 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
       Chef::Log.debug("current_resource before save: #{current_resource}")
       result = @current_resource_vpc.save
       Chef::Log.debug("create as result: #{result}")
+
+      new_resource.id(@current_resource_vpc.id)
     end
 
     action_update

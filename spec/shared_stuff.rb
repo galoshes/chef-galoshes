@@ -92,6 +92,16 @@ shared_context 'common stuff' do
     resource
   end
 
+  let(:existing_subnet) do
+    resource = Chef::Resource::GaloshesSubnet.new('existing subnet')
+    resource.vpc_id(existing_vpc.id)
+    resource.cidr_block('10.0.99.0/24')
+    provider = Chef::Provider::GaloshesSubnet.new(resource, run_context)
+    provider.load_current_resource
+    provider.action_create
+    resource
+  end
+
   before do
     Fog.mock!
     Fog::Mock.reset
@@ -104,5 +114,6 @@ shared_context 'common stuff' do
     existing_launch_configuration
     existing_dhcp_options
     existing_vpc
+    existing_subnet
   end
 end
