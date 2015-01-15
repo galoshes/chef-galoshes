@@ -87,7 +87,9 @@ shared_context 'common stuff' do
     resource.dhcp_options_id(existing_dhcp_options.id)
     resource.cidr_block('10.0.0.0/16')
     provider = Chef::Provider::GaloshesVpc.new(resource, run_context)
+puts "loading :existing_vpc that doesn't exist yet"
     provider.load_current_resource
+puts "creating :existing_vpc"
     provider.action_create
     resource
   end

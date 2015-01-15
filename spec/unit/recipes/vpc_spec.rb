@@ -12,7 +12,7 @@ describe Chef::Provider::GaloshesVpc do
 
   context 'when resource does not exist' do
     let(:resource) do
-      resource = Chef::Resource::GaloshesVpc.new('fake_subdomain')
+      resource = Chef::Resource::GaloshesVpc.new('new vpc')
       resource.dhcp_options_id(existing_dhcp_options.id)
       resource.cidr_block('10.0.0.0/16')
       resource
@@ -21,7 +21,7 @@ describe Chef::Provider::GaloshesVpc do
     describe '#load_current_resource' do
       it 'is empty' do
         expect(provider.exists).to eq(false)
-        expect(provider.current_resource.id).to eq(nil)
+        expect(provider.current_resource.id).to eq('new vpc')
       end
     end
     describe '#action_create' do

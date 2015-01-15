@@ -28,11 +28,7 @@ class Chef::Provider::GaloshesLaunchConfiguration < Chef::Provider::GaloshesBase
   def action_create
     converge_unless(@exists, "create #{resource_str}") do
       create_attributes = [:id, :image_id, :instance_type, :security_groups, :block_device_mappings, :key_name, :user_data, :kernel_id, :ramdisk_id,] # :placement_tenancy]
-      create_attributes.each do |attr|
-        value = new_resource.send(attr)
-        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-        @current_resource.send("#{attr}=", value) unless value.nil?
-      end
+      copy_attributes(create_attributes)
       Chef::Log.debug("current_resource before save: #{current_resource}")
 
       result = @current_resource.save

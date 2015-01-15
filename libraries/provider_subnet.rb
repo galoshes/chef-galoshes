@@ -34,11 +34,7 @@ class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
 
     converge_unless(@exists, "create #{resource_str}") do
       create_attributes = [:cidr_block, :availability_zone, :vpc_id, :tag_set]
-      create_attributes.each do |attr|
-        value = new_resource.send(attr)
-        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-        @current_resource.send("#{attr}=", value) unless value.nil?
-      end
+      copy_attributes(create_attributes)
       Chef::Log.debug("current_resource before save: #{current_resource}")
       result = @current_resource.save
       @current_resource.reload

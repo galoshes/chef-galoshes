@@ -28,11 +28,7 @@ class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
   def action_create
     converge_unless(@exists, "create #{resource_str}") do
       create_attributes = [:groups, :security_group_ids]
-      create_attributes.each do |attr|
-        value = new_resource.send(attr)
-        Chef::Log.debug("attr: #{attr} value: #{value} nil? #{value.nil?}")
-        @current_resource.send("#{attr}=", value) unless value.nil?
-      end
+      copy_attributes(create_attributes)
       Chef::Log.debug("current_resource before save: #{current_resource}")
 
       result = @current_resource.save
