@@ -110,6 +110,16 @@ shared_context 'common stuff' do
     resource
   end
 
+  let(:existing_autoscaling_group) do
+    resource = Chef::Resource::GaloshesAutoscalingGroup.new('existing autoscaling group')
+    resource.availability_zones(['us-east-1'])
+    resource.launch_configuration(existing_launch_configuration)
+    provider = Chef::Provider::GaloshesAutoscalingGroup.new(resource, run_context)
+    provider.load_current_resource
+    provider.action_create
+    resource
+  end
+
   before do
     Fog.mock!
     Fog::Mock.reset
@@ -124,5 +134,6 @@ shared_context 'common stuff' do
     existing_vpc
     existing_subnet
     existing_server
+    existing_autoscaling_group
   end
 end

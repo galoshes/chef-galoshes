@@ -25,7 +25,7 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     if @exists
       new_resource.instances(@current_resource.instances)
     end
-    # FIX new_resource.launch_configuration_name = new_resource.launch_configuration.name
+    new_resource.launch_configuration_name = new_resource.launch_configuration.name
     @current_resource
   end
 
