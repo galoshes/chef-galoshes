@@ -1,3 +1,5 @@
+require_relative 'service_compute'
+
 class Chef::Provider::GaloshesSubnet < Chef::Provider::GaloshesBase
   include Galoshes::ComputeService
 

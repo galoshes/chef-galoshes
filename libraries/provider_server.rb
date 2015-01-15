@@ -1,4 +1,5 @@
 require_relative 'provider_base'
+require_relative 'service_compute'
 
 class Chef::Provider::GaloshesServer < Chef::Provider::GaloshesBase
   include Galoshes::ComputeService

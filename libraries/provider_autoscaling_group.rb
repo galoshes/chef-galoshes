@@ -1,4 +1,5 @@
 require_relative 'provider_base'
+require_relative 'service_auto_scaling'
 
 class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
@@ -16,7 +17,7 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
     @current_resource.reload
     @exists = !(@current_resource.created_at.nil?)
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
-    Chef::Log.debug("instances: #{@current_resource.instances}")
+    Chef::Log.debug("instances: #{@current_resource.instances.to_json}")
     if @exists
       new_resource.instances(@current_resource.instances)
     end

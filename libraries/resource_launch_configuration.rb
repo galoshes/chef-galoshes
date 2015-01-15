@@ -15,7 +15,7 @@ class Chef::Resource::GaloshesLaunchConfiguration < Chef::Resource::LWRPBase
   attribute :ramdisk_id, :kind_of => String
   attribute :user_data, :kind_of => String
   attribute :key_name, :kind_of => String
-  attribute :placement_tenancy, :kind_of => String, :default => 'default'
+  attribute :placement_tenancy, :equal_to => %w(default dedicated), :default => 'default'
 
   attribute :aws_access_key_id, :default => nil
   attribute :aws_secret_access_key, :default => nil

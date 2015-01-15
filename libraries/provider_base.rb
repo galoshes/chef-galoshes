@@ -62,6 +62,18 @@ class Chef
         end
       end
 
+      def audit_model_attribute(attribute_sym)
+        Chef::Log.info("audit #{resource_str}.#{attribute_sym}")
+
+        current_value = @current_resource.send(attribute_sym)
+        new_value = new_resource.send(attribute_sym)
+        Chef::Log.info("#{resource_str}.#{attribute_sym} cur: #{current_value.inspect} new: #{new_value.inspect}")
+
+        converge_if(current_value != new_value, "audit mismatch for '#{resource_str}.#{attribute_sym}' actual: '#{current_value}' expected: '#{new_value}'") do
+          new_resource.updated_by_last_action(true)
+        end
+      end
+
       def verify_attribute(attribute_sym, verify_result_status = true, &fix_the_attribute)
         Chef::Log.info("verify #{resource_str}.#{attribute_sym}")
         fix_the_attribute ||= ->() {}

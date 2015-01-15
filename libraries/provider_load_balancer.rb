@@ -2,6 +2,8 @@
 # validate in resource def that availability zone or subnet, but not both set
 # compare lists with set to make sure order doesn't matter
 
+require_relative 'service_elb'
+
 class Chef::Provider::GaloshesLoadBalancer < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
   include Galoshes::ElbService

@@ -1,4 +1,5 @@
 require_relative 'provider_base'
+require_relative 'service_dns'
 
 class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin

@@ -51,7 +51,12 @@ describe Chef::Provider::GaloshesLaunchConfiguration do
       it 'is created' do
         provider.action_create
         expect(provider.current_resource.user_data).not_to eq(resource.user_data)
-        expect(updates).to include("update '#{provider.resource_str}.user_data' from 'existing user data' to 'new user data'")
+      end
+    end
+    describe '#action_update' do
+      it 'is audited' do
+        provider.action_update
+        expect(updates).to include("audit mismatch for '#{provider.resource_str}.user_data' actual: 'existing user data' expected: 'new user data'")
       end
     end
   end
