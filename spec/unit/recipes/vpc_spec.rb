@@ -50,5 +50,10 @@ describe Chef::Provider::GaloshesVpc do
         provider.action_create
       end
     end
+    describe '#action_update' do
+      it 'is updated' do
+        provider.action_update
+      end
+    end
   end
 end

@@ -15,15 +15,15 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
       @exists = false
     else
       Chef::Log.info("Found dhcp_option[#{new_resource.name}]. Setting attributes.")
-      @current_resource.id(dhcp_options[0].id)
+      current_resource.id(dhcp_options[0].id)
       @current_resource.configuration_set(dhcp_options[0].dhcp_configuration_set)
       @current_resource.tags(dhcp_options[0].tag_set)
+      new_resource.id(@current_resource.id)
+
       @exists = true
     end
 
     # new_resource.tags['Name'] = new_resource.name
-
-    @current_resource
   end
 
   def action_create
@@ -37,10 +37,12 @@ class Chef::Provider::GaloshesDhcpOptions < Chef::Provider::GaloshesBase
           @current_resource.id(body_set[0]['dhcpOptionsId'])
           @current_resource.configuration_set(body_set[0]['configurationSet'])
           @current_resource.tags(body_set[0]['tagSet'])
+
+          new_resource.id(@current_resource.id)
         end
-        Chef::Log.info("id: #{@current_resource.id}")
       end
     end
+    Chef::Log.info("id: #{@current_resource.id}")
 
     verify_attribute(:tags) do
       service.create_tags(@current_resource.id, new_resource.tags)

@@ -57,12 +57,14 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
         new_resource.updated_by_last_action(true)
       end
 
-      new_tags = new_resource.tags.map { |k, v| { 'ResourceId' => new_resource.name, 'PropagateAtLaunch' => true, 'Key' => k, 'Value' => v, 'ResourceType' => 'auto-scaling-group' } }
-      Chef::Log.debug("tags cur: #{@current_resource.tags}")
-      Chef::Log.debug("tags new: #{new_tags}")
-      converge_if(new_tags != @current_resource.tags, "updating #{resource_str}.tags") do
-        service.create_or_update_tags(new_tags)
-        new_resource.updated_by_last_action(true)
+      unless new_resource.tags.nil?
+        new_tags = new_resource.tags.map { |k, v| { 'ResourceId' => new_resource.name, 'PropagateAtLaunch' => true, 'Key' => k, 'Value' => v, 'ResourceType' => 'auto-scaling-group' } }
+        Chef::Log.debug("tags cur: #{@current_resource.tags}")
+        Chef::Log.debug("tags new: #{new_tags}")
+        converge_if(new_tags != @current_resource.tags, "updating #{resource_str}.tags") do
+          service.create_or_update_tags(new_tags) unless Fog.mocking?
+          new_resource.updated_by_last_action(true)
+        end
       end
 
       new_resource.servers = []

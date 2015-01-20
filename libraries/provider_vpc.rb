@@ -38,19 +38,21 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
 
   def action_update
     verify_attribute(:tags) do
-      con.create_tags(@current_resource.id, new_resource.tags)
+      service.create_tags(@current_resource.id, new_resource.tags)
     end
 
     verify_attribute(:dhcp_options_id) do
-      con.associate_dhcp_options(new_resource.dhcp_options_id, @current_resource.id)
+      service.associate_dhcp_options(new_resource.dhcp_options_id, @current_resource.id)
     end
 
-    verify_attribute(:enable_dns_support) do
-      con.modify_vpc_attribute(@current_resource.id, 'EnableDnsSupport.Value' => new_resource.enable_dns_support)
+    enable_dns_support = service.describe_vpc_attribute(@current_resource.id, 'enableDnsSupport')
+    converge_unless(new_resource.enable_dns_support == enable_dns_support, "update enable_dns_support from '#{enable_dns_support}' to '#{new_resource.enable_dns_support}'") do
+      service.modify_vpc_attribute(@current_resource.id, 'EnableDnsSupport.Value' => new_resource.enable_dns_support)
     end
 
-    verify_attribute(:enable_dns_hostnames) do
-      con.modify_vpc_attribute(@current_resource.id, 'EnableDnsHostnames.Value' => new_resource.enable_dns_hostnames)
+    enable_dns_hostnames = service.describe_vpc_attribute(@current_resource.id, 'enableDnsHostnames')
+    converge_unless(new_resource.enable_dns_hostnames == enable_dns_hostnames, "update enable_dns_hostnames from '#{enable_dns_hostnames}' to '#{new_resource.enable_dns_hostnames}'") do
+      service.modify_vpc_attribute(@current_resource.id, 'EnableDnsHostnames.Value' => new_resource.enable_dns_hostnames)
     end
 
     verify_attribute(:tenancy) do

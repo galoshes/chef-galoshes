@@ -42,7 +42,7 @@ class Chef::Provider::GaloshesDnsZone < Chef::Provider::GaloshesBase
 
   def action_update
     if @exists
-      filtered_options = @current_resource.class.attributes
+      filtered_options = [:description]
       Chef::Log.debug("filtered_options: #{filtered_options}")
       converged = true
       filtered_options.each do |attr|

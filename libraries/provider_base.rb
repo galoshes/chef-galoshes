@@ -24,12 +24,6 @@ class Chef
         end
       end
 
-      def con
-        require 'fog'
-        @con ||= Fog::Compute[:aws]
-        @con
-      end
-
       def whyrun_supported?
         true
       end

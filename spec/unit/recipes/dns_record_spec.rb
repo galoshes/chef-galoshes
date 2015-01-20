@@ -56,5 +56,15 @@ describe Chef::Provider::GaloshesDnsRecord do
         provider.action_create
       end
     end
+    describe '#action_update' do
+      it 'is updated' do
+        provider.action_update
+      end
+    end
+    describe '#action_delete' do
+      it 'is deleted' do
+        provider.action_delete
+      end
+    end
   end
 end

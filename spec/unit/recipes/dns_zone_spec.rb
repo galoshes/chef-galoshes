@@ -43,5 +43,10 @@ describe Chef::Provider::GaloshesDnsZone do
         expect(updates).to include("create #{provider.resource_str}")
       end
     end
+    describe '#action_update' do
+      it 'is updated' do
+        provider.action_update
+      end
+    end
   end
 end

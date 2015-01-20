@@ -47,5 +47,10 @@ describe Chef::Provider::GaloshesSecurityGroup do
         provider.action_create
       end
     end
+    describe '#action_delete' do
+      it 'is deleted' do
+        provider.action_delete
+      end
+    end
   end
 end
