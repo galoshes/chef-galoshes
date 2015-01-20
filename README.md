@@ -11,7 +11,7 @@ This cookbook manages AWS services including: Autoscaling Groups, DNS Zones and 
 
 ## Getting Started
 
-See [[Quick Start]] for an introduction to using galoshes.
+See [Quick Start] for an introduction to using galoshes.
 
 ## Attributes
 
