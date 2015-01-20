@@ -16,13 +16,12 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
 
     @current_resource.reload
     @exists = !(@current_resource.created_at.nil?)
-    Chef::Log.debug("#{resource_str} current_resource: #{@current_resource} exists: #{@exists}")
+    Chef::Log.debug("#{resource_str} current_resource: #{@current_resource.to_json} exists: #{@exists}")
     Chef::Log.debug("instances: #{@current_resource.instances.to_json}")
     if @exists
       new_resource.instances(@current_resource.instances)
     end
     new_resource.launch_configuration_name = new_resource.launch_configuration.name
-    @current_resource
   end
 
   def action_create
