@@ -5,28 +5,26 @@ class Chef::Provider::GaloshesAutoscalingGroup < Chef::Provider::GaloshesBase
   include Galoshes::DeleteMixin
   include Galoshes::AutoscalingService
 
-  attr_reader :collection
-
-  def load_current_resource
+  def collection
     require 'fog'
     require 'fog/aws/models/auto_scaling/groups'
+    Fog::AWS::AutoScaling::Groups.new(:service => service)
+  end
 
-    @collection = Fog::AWS::AutoScaling::Groups.new(:service => service)
-    @current_resource = @collection.new(:id => new_resource.name, :service => service)
-
+  def load_current_resource
+    @current_resource = collection.new(:id => new_resource.name, :service => service)
     @current_resource.reload
     @exists = !(@current_resource.created_at.nil?)
     Chef::Log.debug("#{resource_str} current_resource: #{@current_resource.to_json} exists: #{@exists}")
     Chef::Log.debug("instances: #{@current_resource.instances.to_json}")
-    if @exists
-      new_resource.instances(@current_resource.instances)
-    end
+
+    new_resource.instances(@current_resource.instances)
     new_resource.launch_configuration_name = new_resource.launch_configuration.name
   end
 
   def action_create
     converge_unless(@exists, "create #{resource_str}") do
-      create_attributes = @collection.model.attributes
+      create_attributes = collection.model.attributes
       copy_attributes(create_attributes)
       Chef::Log.debug("current_resource before save: #{current_resource}")
 
