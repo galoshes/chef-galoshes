@@ -20,12 +20,5 @@ FoodCritic::Rake::LintTask.new(:lint) do |t|
   }
 end
 
-task :code_coverage do
-  require 'simplecov'
-  require 'codeclimate-test-reporter'
-  CodeClimate::TestReporter::Formatter.new.format(SimpleCov.result)
-end
-
 desc 'Run all tests'
-task :test => [:spec, :lint, :rubocop, :code_coverage]
-task :default => :test
+task :default => [:spec, :lint, :rubocop]
