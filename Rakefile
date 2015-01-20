@@ -2,7 +2,6 @@ require 'rubocop/rake_task'
 require 'foodcritic'
 require 'foodcritic/rake_task'
 require 'rspec/core/rake_task'
-require 'simplecov'
 require 'codeclimate-test-reporter'
 
 desc 'Run RSpec tests'
@@ -21,4 +20,5 @@ FoodCritic::Rake::LintTask.new(:lint) do |t|
 end
 
 desc 'Run all tests'
-task :default => [:spec, :lint, :rubocop]
+task :test => [:rubocop, :lint, :spec]
+task :default => :test
