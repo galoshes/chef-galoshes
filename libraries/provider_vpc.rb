@@ -45,14 +45,13 @@ class Chef::Provider::GaloshesVpc < Chef::Provider::GaloshesBase
       service.associate_dhcp_options(new_resource.dhcp_options_id, @current_resource.id)
     end
 
-    enable_dns_support = service.describe_vpc_attribute(@current_resource.id, 'enableDnsSupport')
-    converge_unless(new_resource.enable_dns_support == enable_dns_support, "update enable_dns_support from '#{enable_dns_support}' to '#{new_resource.enable_dns_support}'") do
-      service.modify_vpc_attribute(@current_resource.id, 'EnableDnsSupport.Value' => new_resource.enable_dns_support)
-    end
-
-    enable_dns_hostnames = service.describe_vpc_attribute(@current_resource.id, 'enableDnsHostnames')
-    converge_unless(new_resource.enable_dns_hostnames == enable_dns_hostnames, "update enable_dns_hostnames from '#{enable_dns_hostnames}' to '#{new_resource.enable_dns_hostnames}'") do
-      service.modify_vpc_attribute(@current_resource.id, 'EnableDnsHostnames.Value' => new_resource.enable_dns_hostnames)
+    [%w(enable_dns_support enableDnsSupport EnableDnsSupport),
+     %w(enable_dns_hostnames enableDnsHostnames EnableDnsHostnames)].each do |attr, aws_describe_attr, aws_modify_attr|
+      cur_value = service.describe_vpc_attribute(@current_resource.id, aws_describe_attr)
+      new_value = new_resource.send(attr)
+      converge_unless(new_value == cur_value, "update #{attr} from '#{cur_value}' to '#{new_value}'") do
+        service.modify_vpc_attribute(@current_resource.id, "#{aws_modify_attr}.Value" => new_value)
+      end
     end
 
     verify_attribute(:tenancy) do
